@@ -33,7 +33,7 @@ func NewRouter() *mux.Router {
 
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-				return []byte("My Secret"), nil
+				return []byte("secreto"), nil
 			},
 			SigningMethod: jwt.SigningMethodHS256,
 		})
