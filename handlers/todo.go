@@ -187,3 +187,21 @@ func TodoSearchStatus(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "bad request, must be true or false, not "+todoStatus, http.StatusNotFound)
 	}
 }
+
+func PingHandler(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	//var todos []models.Todo
+	session := core.Session.Copy()
+	defer session.Close()
+	response := "Todo en orden"
+	core.JSONError(w, r, start, response, http.StatusInternalServerError)
+}
+
+func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	//var todos []models.Todo
+	session := core.Session.Copy()
+	defer session.Close()
+	response := "Todo en orden"
+	core.JSONError(w, r, start, response, http.StatusInternalServerError)
+}

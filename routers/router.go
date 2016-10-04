@@ -3,9 +3,13 @@ package routers
 import (
 	"log"
 	"net/http"
+	//"encoding/json"
 
 	"github.com/pgmonzon/Yng_Servicios/handlers"
 
+  "github.com/auth0/go-jwt-middleware"
+  "github.com/codegangsta/negroni"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 )
 
@@ -27,7 +31,21 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(false)
 
+	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
+			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+				return []byte("My Secret"), nil
+			},
+			SigningMethod: jwt.SigningMethodHS256,
+		})
 	//Todo
+	r.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
+	r.Handle("/secured/ping", negroni.New(
+		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
+		negroni.Wrap(http.HandlerFunc(handlers.SecuredPingHandler)),
+  ))
+
+
+
 	r.HandleFunc("/api/todos", handlers.TodoIndex).Methods("GET")
 	r.HandleFunc("/api/todos/{todoID}", handlers.TodoShow).Methods("GET")
 	r.HandleFunc("/api/todos", handlers.TodoAdd).Methods("POST")
