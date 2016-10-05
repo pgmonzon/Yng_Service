@@ -30,12 +30,15 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 //NewRouter creates the router
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(false)
+	secret := ""
 
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-				return []byte("secreto"), nil
+				return []byte(secret), nil
 			},
 			SigningMethod: jwt.SigningMethodHS256,
+			/*Extractor: jwtmiddleware.FromFirst(jwtmiddleware.FromAuthHeader,
+		                                     jwtmiddleware.FromParameter("auth_code")),*/
 		})
 	//Todo
 	r.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
