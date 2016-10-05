@@ -193,8 +193,7 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 	//var todos []models.Todo
 	session := core.Session.Copy()
 	defer session.Close()
-	response := "Todo en orden"
-	core.JSONError(w, r, start, response, http.StatusInternalServerError)
+	core.JSONResponse(w, r, start, []byte("Todo en orden"), http.StatusInternalServerError)
 }
 
 func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
@@ -202,6 +201,5 @@ func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
 	//var todos []models.Todo
 	session := core.Session.Copy()
 	defer session.Close()
-	response := "Felicitaciones! Estas autenticado"
-	core.JSONError(w, r, start, response, http.StatusInternalServerError)
+	core.JSONResponse(w, r, start, []byte("Felicitaciones! Estas autenticado"), http.StatusInternalServerError)
 }
