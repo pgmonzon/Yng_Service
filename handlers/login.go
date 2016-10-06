@@ -9,6 +9,8 @@ import (
 
 	"github.com/pgmonzon/Yng_Servicios/models"
   "github.com/pgmonzon/Yng_Servicios/core"
+
+  "gopkg.in/mgo.v2/bson"
 )
 
 const indexPage = `
@@ -69,17 +71,27 @@ func IndexLogin(w http.ResponseWriter, r *http.Request) {
 func IndexLogued(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	var usuario models.Usuario
+  var usuarioDB models.Usuario //juntar estos 2
 	json.NewDecoder(r.Body).Decode(&usuario)
-	if usuario.User != "guest" {
-		core.JSONError(w, r, start, "Felicidades, me estas pasando algo", http.StatusBadRequest)
-		return
-	}
-  if usuario.User == "guest" {
-    core.JSONError(w, r, start, "QUE HACES QUERIDO!!!", http.StatusBadRequest)
-  }
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
+
+  err2 := collection.Find(bson.M{"user": usuario.User}).All(&usuarioDB)
+  if err2 != nil {
+    core.JSONError(w, r, start, "Failed to search todo name", http.StatusInternalServerError)
+    return
+  }
+  b, err2 := json.Marshal(usuarioDB)
+
+  if usuario.User == "guest" {
+    core.JSONResponse(w, r, start, b, http.StatusOK)
+    return
+  }
+  if usuario.User != usuarioDB.User {
+    core.JSONError(w, r, start, "QUE HACES QUERIDO!!!", http.StatusBadRequest)
+    return
+  }
 	err := collection.Insert(usuario)
 	if err != nil {
 		core.JSONError(w, r, start, "Failed to insert user", http.StatusInternalServerError)
@@ -88,9 +100,3 @@ func IndexLogued(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Location", r.URL.Path+"/"+string(usuario.ID.Hex()))
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
-
-/*
-func internalPageHandler(response http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(response, internalPage)
-}
-*/
