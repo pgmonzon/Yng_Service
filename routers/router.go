@@ -47,6 +47,10 @@ func NewRouter() *mux.Router {
 		negroni.Wrap(http.HandlerFunc(handlers.SecuredPingHandler)),
   ))
 
+  //Login
+  r.HandleFunc("/", handlers.IndexLogin)
+	r.HandleFunc("/login", handlers.IndexLogued).Methods("POST")
+
   //Usuarios, por ahora solo tiene 2 funciones, mostrar usuarios y agregar usuarios
   r.HandleFunc("/api/usuarios", handlers.IndexUsuario).Methods("GET")
 	r.HandleFunc("/api/usuarios", handlers.AgregarUsuario).Methods("POST")
