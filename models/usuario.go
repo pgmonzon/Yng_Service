@@ -10,5 +10,5 @@ type Usuario struct {
 	User      string        `json:"user"`
 	Pass      string        `json:"password"`
 	Email     string        `json:"email"`
-	PassMD    uint64        `json:"md5"`
+	PassMD    int32        `json:"md5"`
 }
