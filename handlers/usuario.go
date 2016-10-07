@@ -8,7 +8,6 @@ import (
 
 	"github.com/pgmonzon/Yng_Servicios/models"
 	"github.com/pgmonzon/Yng_Servicios/core"
-	"github.com/pgmonzon/Yng_Servicios/helpers"
 
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
@@ -39,13 +38,12 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Usuario o contraseña invalidas", http.StatusBadRequest)
 		return
 	}
-	usuario.PassMD = helpers.HashearMD5(usuario.Pass)
+	usuario.PassMD = core.HashearMD5(usuario.Pass)
 
 	objID := bson.NewObjectId()
 	usuario.ID = objID
 	session := core.Session.Copy()
 	defer session.Close()
-	log.Printf("Creando usuario: %s p:%s %d", usuario.User, usuario.Pass, usuario.PassMD)
 	//log.Printf("La ID es: %s")
 	collection := session.DB(core.Dbname).C("usuarios")
 
@@ -68,6 +66,7 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Failed to insert user", http.StatusInternalServerError)
 		return
 	}
+	log.Printf("CREANDO USUARIO: %s PASSWORD: %d", usuario.User, usuario.PassMD)
 	w.Header().Set("Location", r.URL.Path+"/"+string(usuario.ID.Hex()))
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
@@ -81,7 +80,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
-	err := collection.Find(bson.M{"user": usuarioDB.User, "pass": usuarioDB.Pass}).All(&usuario)
+	err := collection.Find(bson.M{"user": usuarioDB.User, "passmd": core.HashearMD5(usuarioDB.Pass)}).All(&usuario)
 	if err != nil {
 		core.JSONError(w, r, start, "Failed to search user name", http.StatusInternalServerError)
 		return
@@ -107,7 +106,7 @@ func UserSearchNameJSON(w http.ResponseWriter, r *http.Request) {
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
-	err := collection.Find(bson.M{"user": usuarioDB.User, "md5": helpers.HashearMD5(usuarioDB.Pass)}).All(&usuario)
+	err := collection.Find(bson.M{"user": usuarioDB.User, "md5": core.HashearMD5(usuarioDB.Pass)}).All(&usuario)
 	if err != nil {
 		core.JSONError(w, r, start, "Failed to search user name", http.StatusInternalServerError)
 		return
