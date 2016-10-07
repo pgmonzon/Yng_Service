@@ -2,13 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
-	"crypto/md5"
 	"net/http"
 	"time"
-  "encoding/binary"
 
 	"github.com/pgmonzon/Yng_Servicios/models"
 	"github.com/pgmonzon/Yng_Servicios/core"
+	"github.com/pgmonzon/Yng_Servicios/helpers"
 
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
@@ -17,7 +16,7 @@ import (
 //TodoIndex handler to route index
 func IndexUsuario(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
-	var usuarios []models.UsuarioHash
+	var usuarios []models.Usuario
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
@@ -32,16 +31,13 @@ func IndexUsuario(w http.ResponseWriter, r *http.Request) {
 // TodoAdd handler to add new todo
 func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
-	var usuariosimple models.Usuario
-	json.NewDecoder(r.Body).Decode(&usuariosimple)
-	if usuariosimple.User == "" { //TODO: Esto a futuro debe chequear si el usuario tiene menos de 4 letras o si la contraseña es incorrecta
-		core.JSONError(w, r, start, "Incorrect body", http.StatusBadRequest)
+	var usuario models.Usuario
+	json.NewDecoder(r.Body).Decode(&usuario)
+	if (usuario.User == "" || usuario.Pass == "") { //TODO: Esto a futuro debe chequear si el usuario tiene menos de 4 letras o si la contraseña es incorrecta
+		core.JSONError(w, r, start, "Usuario o contraseña invalidas", http.StatusBadRequest)
 		return
 	}
-	md5pass := md5.New()
-	md5pass.Write([]byte(usuariosimple.Pass))
-	usuariosimple.Pass = binary.BigEndian.Uint64(md5pass.Sum(nil))
-  var usuario models.UsuarioHash
+	usuario.PassMD = helpers.HashearMD5(usuario.Pass)
 
 	objID := bson.NewObjectId()
 	usuario.ID = objID
@@ -67,7 +63,7 @@ func UserSearchNameJSON(w http.ResponseWriter, r *http.Request) {
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
-	err := collection.Find(bson.M{"user": usuarioDB.User, "pass": usuarioDB.Pass}).All(&usuario)
+	err := collection.Find(bson.M{"user": usuarioDB.User, "md5": helpers.HashearMD5(usuarioDB.Pass)}).All(&usuario)
 	if err != nil {
 		core.JSONError(w, r, start, "Failed to search user name", http.StatusInternalServerError)
 		return

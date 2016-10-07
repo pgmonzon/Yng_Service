@@ -49,11 +49,11 @@ func NewRouter() *mux.Router {
 
   //Login
   r.HandleFunc("/", handlers.IndexLogin)
-	r.HandleFunc("/login", handlers.UserLogin).Methods("POST")
 
   //Usuarios, por ahora solo tiene 2 funciones, mostrar usuarios y agregar usuarios
   r.HandleFunc("/api/usuarios", handlers.IndexUsuario).Methods("GET")
-	r.HandleFunc("/api/usuarios", handlers.AgregarUsuario).Methods("POST")
+	r.HandleFunc("/api/usuarios/login", handlers.UserLogin).Methods("POST")
+	r.HandleFunc("/api/usuarios/register", handlers.AgregarUsuario).Methods("POST")
 	r.HandleFunc("/api/usuarios/search/byname/{User}", handlers.UserSearchName).Methods("GET")
 	r.HandleFunc("/api/usuarios/search/byname/{User}", handlers.UserSearchNameJSON).Methods("POST")
 
