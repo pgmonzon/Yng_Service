@@ -13,28 +13,6 @@ import (
 const (
     mySigningKey = "firechrome"
 )
-/*
-func main() {
-    createdToken, err := ExampleNew([]byte(mySigningKey))
-    if err != nil {
-        fmt.Println("Creating token failed")
-    }
-    ExampleParse(createdToken, mySigningKey)
-}*/
-
-/*
-func CrearTokenViejo(mySigningKey []byte) (string, error) {
-    // Create the token
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"iss": "adrian.diasdacostalima@gmail.com",
-			"exp": time.Now().Add(time.Hour + 1).Unix(),
-		})
-    // Sign and get the complete encoded token as a string
-    tokenString, err := token.SignedString(mySigningKey)
-		fmt.Println(token.SignedString(mySigningKey))
-    return tokenString, err
-}*/
-
 
 func CrearToken(mySigningKey []byte) (string) {
     // Create the token
@@ -62,18 +40,4 @@ func ResponderToken(w http.ResponseWriter, r *http.Request, start time.Time, res
 	if string(response) != "" {
 		w.Write(response)
 	}
-}
-
-
-
-func ExampleParse(myToken string, myKey string) {
-    token, err := jwt.Parse(myToken, func(token *jwt.Token) (interface{}, error) {
-        return []byte(myKey), nil
-    })
-
-    if err == nil && token.Valid {
-        fmt.Println("Your token is valid.  I like your style.")
-    } else {
-        fmt.Println("This token is terrible!  I cannot accept this.")
-    }
 }
