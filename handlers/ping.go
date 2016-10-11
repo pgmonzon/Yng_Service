@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -13,7 +14,8 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 	//var todos []models.Todo
 	session := core.Session.Copy()
 	defer session.Close()
-	core.JSONResponse(w, r, start, []byte("Todo en orden"), http.StatusOK)
+	respuesta, _ := json.MarshalIndent("Esta capa no tiene seguridad", "", "    ")
+	core.JSONResponse(w, r, start, respuesta, http.StatusOK)
 }
 
 func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,5 +23,6 @@ func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
 	//var todos []models.Todo
 	session := core.Session.Copy()
 	defer session.Close()
-	core.JSONResponse(w, r, start, []byte("Felicitaciones! Estas autenticado"), http.StatusOK)
+	respuesta, _ := json.MarshalIndent("Estas autenticado.", "", "    ")
+	core.JSONResponse(w, r, start, respuesta, http.StatusOK)
 }

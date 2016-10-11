@@ -93,7 +93,9 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusNotFound)
 		return
 	}
-	core.ResponderToken(w, r, start, []byte(core.CrearToken([]byte("firechrome"))), http.StatusOK)
+	token := core.CrearToken([]byte("firechrome"))
+	response, _ = json.MarshalIndent(token,"","      ")
+	core.JSONResponse(w, r, start, response, http.StatusOK)
 }
 
 func UserSearchNameJSON(w http.ResponseWriter, r *http.Request) {
