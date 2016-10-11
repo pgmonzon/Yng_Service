@@ -30,7 +30,7 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 //NewRouter creates the router
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(false)
-	secret := ""
+	secret := "firechrome"
 
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
