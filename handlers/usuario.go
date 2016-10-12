@@ -13,7 +13,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//TodoIndex handler to route index
 func IndexUsuario(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	var usuarios []models.Usuario
@@ -28,11 +27,11 @@ func IndexUsuario(w http.ResponseWriter, r *http.Request) {
 	core.JSONResponse(w, r, start, response, http.StatusOK)
 }
 
-// TodoAdd handler to add new todo
+// Registrar usuarios
 func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
-	var usuario models.Usuario
-	var usuariodos []models.Usuario
+	var usuario models.Usuario			// Se usan dos models porque uno sirve para parsear el r.Body que se pasa en la llamada http
+	var usuarioDB []models.Usuario // mientras que el otro se arma para chequear la base de datos (usuarioDB)
 	json.NewDecoder(r.Body).Decode(&usuario)
 	if (usuario.User == "" || usuario.Pass == "") { //TODO: Esto a futuro debe chequear si el usuario tiene menos de 4 letras o si la contraseña es incorrecta
 		core.JSONError(w, r, start, "Usuario o contraseña invalidas", http.StatusBadRequest)
@@ -44,15 +43,14 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 	usuario.ID = objID
 	session := core.Session.Copy()
 	defer session.Close()
-	//log.Printf("La ID es: %s")
 	collection := session.DB(core.Dbname).C("usuarios")
 
-	err := collection.Find(bson.M{"user": usuario.User}).All(&usuariodos)
+	err := collection.Find(bson.M{"user": usuario.User}).All(&usuarioDB)
 	if err != nil {
 		core.JSONError(w, r, start, "La base de datos esta caida", http.StatusInternalServerError)
 		return
 	}
-	response, err := json.MarshalIndent(usuariodos, "", "    ")
+	response, err := json.MarshalIndent(usuarioDB, "", "    ")
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +64,7 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Failed to insert user", http.StatusInternalServerError)
 		return
 	}
-	log.Printf("CREANDO USUARIO: %s PASSWORD: %d", usuario.User, usuario.PassMD)
+	log.Printf("CREANDO USUARIO: %s PASSWORD: %d", usuario.User, usuario.PassMD) //Notese que la password es la md5
 	w.Header().Set("Location", r.URL.Path+"/"+string(usuario.ID.Hex()))
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
@@ -74,18 +72,18 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
-	var usuario []models.Usuario
-	var usuarioDB models.Usuario
-	json.NewDecoder(r.Body).Decode(&usuarioDB)
+	var usuario models.Usuario			// mismo concepto que antes
+	var usuarioDB []models.Usuario
+	json.NewDecoder(r.Body).Decode(&usuario)
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
-	err := collection.Find(bson.M{"user": usuarioDB.User, "passmd": core.HashearMD5(usuarioDB.Pass)}).All(&usuario)
+	err := collection.Find(bson.M{"user": usuario.User, "passmd": core.HashearMD5(usuario.Pass)}).All(&usuarioDB)
 	if err != nil {
 		core.JSONError(w, r, start, "Failed to search user name", http.StatusInternalServerError)
 		return
 	}
-	response, err := json.MarshalIndent(usuario, "", "    ")
+	response, err := json.MarshalIndent(usuarioDB, "", "    ")
 	if err != nil {
 		panic(err)
 	}
@@ -98,7 +96,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	core.JSONResponse(w, r, start, response, http.StatusOK)
 }
 
-func UserSearchNameJSON(w http.ResponseWriter, r *http.Request) {
+/*func UserSearchNameJSON(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	var usuario []models.Usuario
 	var usuarioDB models.Usuario
@@ -122,28 +120,4 @@ func UserSearchNameJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	core.JSONResponse(w, r, start, response, http.StatusOK)
-}
-
-func UserSearchName(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	var usuario []models.Usuario
-	vars := mux.Vars(r)
-	User := vars["User"]
-	session := core.Session.Copy()
-	defer session.Close()
-	collection := session.DB(core.Dbname).C("usuarios")
-	err := collection.Find(bson.M{"user": "santi"}).All(&usuario)
-	if err != nil {
-		core.JSONError(w, r, start, "Failed to search user name", http.StatusInternalServerError)
-		return
-	}
-	response, err := json.MarshalIndent(usuario, "", "    ")
-	if err != nil {
-		panic(err)
-	}
-	if string(response) == "null" {
-		core.JSONError(w, r, start, "Could not find any User containing "+User, http.StatusNotFound)
-		return
-	}
-	core.JSONResponse(w, r, start, response, http.StatusOK)
-}
+}*/

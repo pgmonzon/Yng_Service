@@ -23,6 +23,6 @@ func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
 	//var todos []models.Todo
 	session := core.Session.Copy()
 	defer session.Close()
-	respuesta, _ := json.MarshalIndent("Estas autenticado.", "", "    ")
+	respuesta, _ := json.MarshalIndent("Estas autenticado.", "", "    ") //Las respuestas siempre tienen que ser en JSON
 	core.JSONResponse(w, r, start, respuesta, http.StatusOK)
 }
