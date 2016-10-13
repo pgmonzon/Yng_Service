@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+//	"fmt"
 
 	"github.com/pgmonzon/Yng_Servicios/models"
 	"github.com/pgmonzon/Yng_Servicios/core"
@@ -99,3 +100,40 @@ func AgregarPermiso(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Location", r.URL.Path+"/"+string(permiso.ID.Hex()))
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// oo
+/*
+func BuscarRol() {
+	var rol models.Roles
+  rolID := "57fe7c2b41586016fe6a5642"
+	if bson.IsObjectIdHex(rolID) != true {
+    fmt.Printf("no, esta mal")
+		return
+	}
+	rolID = bson.ObjectIdHex(rolID)
+	session := core.Session.Copy()
+	defer session.Close()
+	collection := session.DB(core.Dbname).C("roles")
+  err := collection.Find(bson.M{"_id": rolID}).All(&rol)
+	if err != nil {
+		fmt.Printf("no funciona")
+		return
+	}
+	fmt.Printf("funciona papa")
+}*/

@@ -13,13 +13,13 @@ import (
     //"gopkg.in/mgo.v2/bson"
 )
 
-func CrearToken(username string) (string) { //TODO: Cambiar a ID BSON (b bson.ObjectID)
+func CrearToken(usuario models.Usuario) (string) {
     // Crea el token
     secreto := []byte("firechrome")
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"iss": "yangeeapp@gmail.com",
 			"exp": time.Now().Add(time.Hour + 1).Unix(),
-      "user": username,
+      "id": usuario.ID,
 		})
     // Crea una string a partir de la key (el secreto)
     tokenString, _ := token.SignedString(secreto)

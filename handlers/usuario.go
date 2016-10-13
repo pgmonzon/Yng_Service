@@ -91,9 +91,10 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusNotFound)
 		return
 	}
-	token := core.CrearToken(usuario.User)
+	token := core.CrearToken(usuarioDB[0])
 	response, _ = json.MarshalIndent(token,"","      ")
 	core.JSONResponse(w, r, start, response, http.StatusOK)
+	//BuscarRol()
 }
 
 /*func UserSearchNameJSON(w http.ResponseWriter, r *http.Request) {
