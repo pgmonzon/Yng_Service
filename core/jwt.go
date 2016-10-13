@@ -17,7 +17,7 @@ func CrearToken(username string) (string) { //TODO: Cambiar a ID BSON (b bson.Ob
     // Crea el token
     secreto := []byte("firechrome")
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"iss": "adrian.diasdacostalima@gmail.com",
+			"iss": "yangeeapp@gmail.com",
 			"exp": time.Now().Add(time.Hour + 1).Unix(),
       "user": username,
 		})
