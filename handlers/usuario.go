@@ -91,7 +91,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusNotFound)
 		return
 	}
-	token := core.CrearToken([]byte("firechrome"))
+	token := core.CrearToken(usuario.User)
 	response, _ = json.MarshalIndent(token,"","      ")
 	core.JSONResponse(w, r, start, response, http.StatusOK)
 }
