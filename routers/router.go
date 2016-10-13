@@ -47,10 +47,8 @@ func NewRouter() *mux.Router {
 		negroni.Wrap(http.HandlerFunc(handlers.SecuredPingHandler)),
   ))
 
-  //Login
-  r.HandleFunc("/", handlers.IndexLogin)
-
   //Usuarios, por ahora solo tiene 2 funciones, mostrar usuarios y agregar usuarios
+
   //r.HandleFunc("/api/usuarios", handlers.IndexUsuario).Methods("GET")
 	r.Handle("/api/usuarios", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
@@ -58,8 +56,14 @@ func NewRouter() *mux.Router {
 	))
 	r.HandleFunc("/api/usuarios/login", handlers.UserLogin).Methods("POST")
 	r.HandleFunc("/api/usuarios/register", handlers.AgregarUsuario).Methods("POST")
-	r.HandleFunc("/api/usuarios/search/byname/{User}", handlers.UserSearchName).Methods("GET")
-	r.HandleFunc("/api/usuarios/search/byname/{User}", handlers.UserSearchNameJSON).Methods("POST")
+	//r.HandleFunc("/api/usuarios/search/byname/{User}", handlers.UserSearchName).Methods("GET")
+	//r.HandleFunc("/api/usuarios/search/byname/{User}", handlers.UserSearchNameJSON).Methods("POST")
+
+	//############			RBAC			##############
+	r.HandleFunc("/api/roles", handlers.ListarRoles).Methods("GET")
+	r.HandleFunc("/api/roles", handlers.AgregarRol).Methods("POST")
+	r.HandleFunc("/api/permisos", handlers.ListarPermisos).Methods("GET")
+	r.HandleFunc("/api/permisos", handlers.AgregarPermiso).Methods("POST")
 
   //Ejemplo de todos
 	r.HandleFunc("/api/todos", handlers.TodoIndex).Methods("GET")
