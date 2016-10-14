@@ -6,6 +6,7 @@ import (
 	//"encoding/json"
 
 	"github.com/pgmonzon/Yng_Servicios/handlers"
+	"github.com/pgmonzon/Yng_Servicios/cfg"
 
   "github.com/auth0/go-jwt-middleware"
   "github.com/codegangsta/negroni"
@@ -30,7 +31,7 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 //NewRouter creates the router
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(false)
-	secret := "firechrome"
+	secret := cfg.Secreto
 
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {

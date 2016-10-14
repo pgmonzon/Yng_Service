@@ -8,6 +8,7 @@ import (
 
 	"github.com/pgmonzon/Yng_Servicios/models"
 	"github.com/pgmonzon/Yng_Servicios/core"
+	"github.com/pgmonzon/Yng_Servicios/cfg"
 
 	//"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
@@ -41,6 +42,9 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 
 	objID := bson.NewObjectId()
 	usuario.ID = objID
+	usuario.Rol = cfg.GuestRol // en cada creacion de usuario, se les asigna un rol que va a ser GUEST
+
+
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
@@ -93,7 +97,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	token := core.CrearToken(usuarioDB[0])
 	response, _ = json.MarshalIndent(token,"","      ")
-	core.JSONResponse(w, r, start, response, http.StatusOK)
+	core.JSONResponse(w, r, start, response, http.StatusCreated)
 	//BuscarRol()
 }
 
