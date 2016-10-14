@@ -24,5 +24,5 @@ type Permisos struct {
 type RP struct {
 	ID             bson.ObjectId `bson:"_id" json:"id"`
 	IDRol          string        `json:"rol"`
-	IDPermiso      string        `json:"permiso"`
+	IDPermisos     []string      `json:"permisos"`
 }

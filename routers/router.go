@@ -65,6 +65,8 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/roles", handlers.AgregarRol).Methods("POST")
 	r.HandleFunc("/api/permisos", handlers.ListarPermisos).Methods("GET")
 	r.HandleFunc("/api/permisos", handlers.AgregarPermiso).Methods("POST")
+	//r.HandleFunc("/api/rp", handlers.ListarRP).Methods("GET")
+	r.HandleFunc("/api/rp", handlers.AgregarRP).Methods("POST")
 
   //Ejemplo de todos
 	r.HandleFunc("/api/todos", handlers.TodoIndex).Methods("GET")

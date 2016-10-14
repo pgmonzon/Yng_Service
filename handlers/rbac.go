@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-//	"fmt"
 
 	"github.com/pgmonzon/Yng_Servicios/models"
 	"github.com/pgmonzon/Yng_Servicios/core"
@@ -29,7 +28,23 @@ func ListarRoles(w http.ResponseWriter, r *http.Request) {
 	core.JSONResponse(w, r, start, response, http.StatusOK)
 }
 
-// TodoAdd handler to add new todo
+func ListarPermisos(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	var permisos []models.Permisos
+	session := core.Session.Copy()
+	defer session.Close()
+	collection := session.DB(core.Dbname).C("permisos")
+	collection.Find(bson.M{}).All(&permisos)
+	response, err := json.MarshalIndent(permisos, "", "    ")
+	if err != nil {
+		panic(err)
+	}
+	core.JSONResponse(w, r, start, response, http.StatusOK)
+}
+
+
+
+
 func AgregarRol(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	var rol models.Roles
@@ -52,33 +67,6 @@ func AgregarRol(w http.ResponseWriter, r *http.Request) {
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
 
-
-
-
-
-
-
-
-
-//
-//------  PERMISOS  ------
-//
-
-func ListarPermisos(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	var permisos []models.Permisos
-	session := core.Session.Copy()
-	defer session.Close()
-	collection := session.DB(core.Dbname).C("permisos")
-	collection.Find(bson.M{}).All(&permisos)
-	response, err := json.MarshalIndent(permisos, "", "    ")
-	if err != nil {
-		panic(err)
-	}
-	core.JSONResponse(w, r, start, response, http.StatusOK)
-}
-
-// TodoAdd handler to add new todo
 func AgregarPermiso(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	var permiso models.Permisos
@@ -101,39 +89,24 @@ func AgregarPermiso(w http.ResponseWriter, r *http.Request) {
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// oo
-/*
-func BuscarRol() {
-	var rol models.Roles
-  rolID := "57fe7c2b41586016fe6a5642"
-	if bson.IsObjectIdHex(rolID) != true {
-    fmt.Printf("no, esta mal")
+func AgregarRP(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	var rp models.RP
+	json.NewDecoder(r.Body).Decode(&rp)
+	if rp.IDRol == "" {
+		core.JSONError(w, r, start, "Incorrect body", http.StatusBadRequest)
 		return
 	}
-	rolID = bson.ObjectIdHex(rolID)
+	objID := bson.NewObjectId()
+	rp.ID = objID
 	session := core.Session.Copy()
 	defer session.Close()
-	collection := session.DB(core.Dbname).C("roles")
-  err := collection.Find(bson.M{"_id": rolID}).All(&rol)
+	collection := session.DB(core.Dbname).C("rp")
+	err := collection.Insert(rp)
 	if err != nil {
-		fmt.Printf("no funciona")
+		core.JSONError(w, r, start, "Failed to insert rp", http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf("funciona papa")
-}*/
+	w.Header().Set("Location", r.URL.Path+"/"+string(rp.ID.Hex()))
+	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
+}
