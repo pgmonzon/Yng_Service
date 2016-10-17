@@ -77,5 +77,9 @@ Log samples:
 		2016/05/29 22:57:41 192.168.0.100:46358	GET	/api/todos/search/bystatus/false	HTTP/1.1	200	654	623.589µs
 
 Prueba de uso de token:
-		
+
 		# curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2p3dC1pZHAuZXhhbXBsZS5jb20iLCJzdWIiOiJhZHJpYW4uZGlhc2RhY29zdGFsaW1hQGdtYWlsLmNvbSIsIm5iZiI6MTQ3NTY3MDc2OSwiZXhwIjoxNDc1Njc0MzY5LCJpYXQiOjE0NzU2NzA3NjksImp0aSI6ImlkMTIzNDU2IiwidHlwIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9yZWdpc3RlciJ9.0p0BA2YzbpP1VxpckDUdLE4v86eir92ETH-SB4nThgI" http://localhost:3113/secured/ping
+
+Agregar permisos:
+
+		# curl -i -H "Content-Type: application/json" -X POST -d '{"permiso": "AgregarUsuario"}'  http://localhost:3113/api/permisos

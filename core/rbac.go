@@ -23,13 +23,13 @@ func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
   }
   log.Println("LOGGING EXITOSO DE: ", id)
   //A PARTIR DE ACA, ESTOY DEBUGGEANDO Y PROBANDO FUNCIONES
-  rol_user, err := extraerRolDelUsuario(id.(string), session) // La tengo que convertir a string porque me devolvieron una interface{}
+  user, err := extraerInfoUsuario(id.(string), session) // La tengo que convertir a string porque me devolvieron una interface{}
   if err != true {
     return false
   }
-  a := extraerPermisosDelRol(rol_user, session)
+  a := extraerPermisosDelRol(user.Rol, session)
   permisosDelUser := extraerNombresDePermisos(a, session)
-  log.Println("Rol del usuario: ",extraerInfoRol(rol_user, session).Nombre)
+  log.Println("Rol del usuario: ",extraerInfoRol(user.Rol, session).Nombre)
   for _, n:= range permisosDelUser{
     if (n == permisoBuscado){
       return true
@@ -56,12 +56,12 @@ func extraerInfoRol(id string, session *mgo.Session) (models.Roles) {
   return rol[0]
 }
 
-func extraerRolDelUsuario(id string, session *mgo.Session) (string, bool) {
+func extraerInfoUsuario(id string, session *mgo.Session) (models.Usuario, bool) {
   //que rol tiene la id que nos pasan???
   var usuario []models.Usuario
 	if bson.IsObjectIdHex(id) != true { // Un poco de sanity.
     log.Printf("FATAL ERROR: Id usuario invalida.")
-		return "no", false //Podria devolver la ID de un usuario especial (una especie de muñeco sin permisos)
+		return usuario[0], false //Podria devolver la ID de un usuario especial (una especie de muñeco sin permisos)
 	}
   id_bson := bson.ObjectIdHex(id)
 	//session := Session.Copy()
@@ -70,13 +70,13 @@ func extraerRolDelUsuario(id string, session *mgo.Session) (string, bool) {
   err := collection.Find(bson.M{"_id": id_bson}).All(&usuario)
 	if err != nil {
 		log.Printf("FATAL ERROR: Id invalida. Lo cual significa que /login esta creando tokens con IDs rotas")
-		return "no", false
+		return usuario[0], false
 	}
   log.Println(usuario[0])
   if usuario[0].Rol == cfg.GuestRol{ //Es guest
-    return usuario[0].Rol, false
+    return usuario[0], false
   }
-	return usuario[0].Rol, true
+	return usuario[0], true
 }
 
 func extraerPermisosDelRol(id string, session *mgo.Session) (models.RP){
@@ -98,7 +98,7 @@ func extraerPermisosDelRol(id string, session *mgo.Session) (models.RP){
 }
 
 func extraerNombresDePermisos(i models.RP, session *mgo.Session) ([]string) {
-  //NOTA: Esto funciona solo si hay 1 permiso por cada rol. Tengo que buscar documentacion de cómo funcionan los slices y hacer un append por cada permiso.
+  //Devuelve un array con los nombres de los permisos
   var permisos []models.Permisos
   //session := Session.Copy()
   //defer session.Close()
@@ -112,4 +112,8 @@ func extraerNombresDePermisos(i models.RP, session *mgo.Session) ([]string) {
   }
   log.Println(listaPermisos)
   return listaPermisos
+}
+
+func estaActivo(modelo struct) (bool){
+  return true
 }
