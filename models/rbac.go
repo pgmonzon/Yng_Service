@@ -15,7 +15,7 @@ type Roles struct {
 //Todo struct to todo
 type Permisos struct {
 	ID        bson.ObjectId `bson:"_id" json:"id"`
-	Nombre    string        `json:"permiso"`
+	Nombre    string        `json:"nombre"`
 	Activo    bool          `json:"activo"`
 	Borrado   bool          `json:"borrado"`
 }

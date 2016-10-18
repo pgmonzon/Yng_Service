@@ -1,8 +1,6 @@
 package core
 
 // NOTA: Hay objetos de bson guardados en string. Tal vez es preferible ser consistente y guardar todos como objetos de bson
-
-
 import (
     "net/http"
     "log"
@@ -14,7 +12,7 @@ import (
 )
 
 func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
-  // esta funcion se encarga de responder SI o NO a la pregunta "¿tiene este usuario permisos para ejecutar lo que me esta pidiendo"
+  // esta funcion se encarga de responder SI o NO a la pregunta "¿tiene este usuario permisos para ejecutar lo que me esta pidiendo?"
   id := extraerClaim(r, "id")
   session := Session.Copy()
   defer session.Close()
@@ -28,13 +26,14 @@ func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
     return false
   }
   a := extraerPermisosDelRol(user.Rol, session)
-  permisosDelUser := extraerNombresDePermisos(a, session)
-  log.Println("Rol del usuario: ",extraerInfoRol(user.Rol, session).Nombre)
-  for _, n:= range permisosDelUser{
-    if (n == permisoBuscado){
+  PermisoID := extraerIDPermiso(permisoBuscado, session).ID
+  for _, v := range a.IDPermisos {
+    v_bson := bson.ObjectIdHex(v)
+    if (v_bson == PermisoID) {
       return true
     }
   }
+  //log.Println("Rol del usuario: ",extraerInfoRol(user.Rol, session).Nombre)
   return false
 }
 
@@ -97,23 +96,17 @@ func extraerPermisosDelRol(id string, session *mgo.Session) (models.RP){
   return rp[0] //esto no es ideal, es temporal
 }
 
-func extraerNombresDePermisos(i models.RP, session *mgo.Session) ([]string) {
-  //Devuelve un array con los nombres de los permisos
-  var permisos []models.Permisos
-  //session := Session.Copy()
-  //defer session.Close()
-
-  listaPermisos := []string{}
-  for v, _ := range i.IDPermisos {
-    id_bson := bson.ObjectIdHex(i.IDPermisos[v])
-    collection := session.DB(Dbname).C("permisos")
-    collection.Find(bson.M{"_id": id_bson}).All(&permisos)
-    listaPermisos = append(listaPermisos, permisos[0].Nombre)
+func extraerIDPermiso(permiso string, session *mgo.Session) (models.Permisos) {
+  var modelPermisos []models.Permisos
+  collection := session.DB(Dbname).C("permisos")
+  err := collection.Find(bson.M{"nombre": permiso}).All(&modelPermisos)
+  if err != nil {
+    log.Printf("FATAL ERROR: Permiso invalido. El permiso buscado no existe.")
+    return modelPermisos[0]
   }
-  log.Println(listaPermisos)
-  return listaPermisos
+  return modelPermisos[0]
 }
 
-func estaActivo(modelo struct) (bool){
+func estaActivo() (bool){
   return true
 }
