@@ -68,6 +68,9 @@ func NewRouter() *mux.Router {
 	//r.HandleFunc("/api/rp", handlers.ListarRP).Methods("GET")
 	r.HandleFunc("/api/rp", handlers.AgregarRP).Methods("POST")
 
+	//############		Ejemplo		##############
+	r.HandleFunc("/api/ejemplos", handlers.EjemploIndex).Methods("GET")
+
   //Ejemplo de todos
 	r.HandleFunc("/api/todos", handlers.TodoIndex).Methods("GET")
 	r.HandleFunc("/api/todos/{todoID}", handlers.TodoShow).Methods("GET")
