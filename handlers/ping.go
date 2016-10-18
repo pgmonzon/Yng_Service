@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-	//"log"
 
 	"github.com/pgmonzon/Yng_Servicios/core"
 )
@@ -26,9 +25,6 @@ func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Este usuario no tiene permisos o hubo un error procesando tu request. Se ha contactado a un administrador.", http.StatusInternalServerError)
 		return
 	}
-	/*if (core.EstaActivo("SecuredPing")){
-		log.Println("capo")
-	}*/
 	session := core.Session.Copy()
 	defer session.Close()
 	respuesta, _ := json.MarshalIndent("Estas autenticado.", "", "    ") //Las respuestas siempre tienen que ser en JSON

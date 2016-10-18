@@ -8,7 +8,6 @@ import (
 
     "github.com/pgmonzon/Yng_Servicios/models"
     "github.com/pgmonzon/Yng_Servicios/cfg"
-    //"gopkg.in/mgo.v2"
     "gopkg.in/mgo.v2/bson"
 )
 
@@ -16,7 +15,7 @@ func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
   // esta funcion se encarga de responder SI o NO a la pregunta "¿tiene este usuario permisos para ejecutar lo que me esta pidiendo?"
   id := extraerClaim(r, "id")
   permiso, err := extraerInfoPermiso(permisoBuscado)
-  if (err == nil) { return false }
+  if (err != nil) { return false }
   if (!permiso.Activo || permiso.Borrado){
     return false
   }
@@ -28,8 +27,10 @@ func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
   if user.Rol == cfg.GuestRol{
     return false //Es guest
   }
-  a := extraerPermisosDelRol(user.Rol)
-  for _, v := range a.IDPermisos {
+
+  RP, err := extraerPermisosDelRol(user.Rol)
+  if (err != nil) { return false }
+  for _, v := range RP.IDPermisos {
     v_bson := bson.ObjectIdHex(v)
     if (v_bson == permiso.ID) {
       log.Println("Acceso permitido de:",user.User,"a:",permisoBuscado)
@@ -79,22 +80,23 @@ func extraerInfoUsuario(id string) (models.Usuario, error) {
 	return usuario[0], nil
 }
 
-func extraerPermisosDelRol(id string) (models.RP){
+func extraerPermisosDelRol(id string) (models.RP, error){
   //le das una ID de rol a esta funcion, y te devuelve los permisos que tiene ese Rol (los devuelve en un array)
   var rp []models.RP
+  var modelError models.RP
   if bson.IsObjectIdHex(id) != true { // Un poco de sanity.
     log.Printf("FATAL ERROR: Id rol invalida.")
-    return rp[0]
+    return modelError, errors.New("Id invalida")
   }
   session := Session.Copy()
   defer session.Close()
   collection := session.DB(Dbname).C("rp")
-  err := collection.Find(bson.M{"idrol": id}).All(&rp)
-  if err != nil {
+  collection.Find(bson.M{"idrol": id}).All(&rp)
+  if (len(rp) == 0) {
     log.Printf("FATAL ERROR: Id invalida. Lo cual significa que /login esta creando tokens con IDs rotas")
-    return rp[0]
+    return modelError, errors.New("Id invalida")
   }
-  return rp[0] //esto no es ideal, es temporal
+  return rp[0], nil //esto no es ideal, es temporal
 }
 
 func extraerInfoPermiso(permiso string) (models.Permisos, error) {
@@ -112,7 +114,12 @@ func extraerInfoPermiso(permiso string) (models.Permisos, error) {
   return modelPermisos[0], nil
 }
 
-/*func EstaActivo(permiso string) (bool){
-  if (extraerInfoPermiso(permiso).Activo == true) { return true }
+func EstaPermisoActivo(permiso string) (bool){
+  per, err := extraerInfoPermiso(permiso)
+  if err == nil {
+    if per.Activo == true{
+      return true
+    }
+  }
   return false
-}*/
+}
