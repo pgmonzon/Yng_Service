@@ -70,6 +70,12 @@ func NewRouter() *mux.Router {
 
 	//############		Ejemplo		##############
 	r.HandleFunc("/api/ejemplos", handlers.EjemploIndex).Methods("GET")
+	r.HandleFunc("/api/ejemplos", handlers.AgregarEjemplo).Methods("POST")
+	//r.HandleFunc("/api/ejemplos/{ejemploID}", handlers.ModificarEjemplo).Methods("PUT")
+	r.Handle("/api/ejemplos/{ejemploID}", negroni.New(
+		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
+		negroni.Wrap(http.HandlerFunc(handlers.ModificarEjemplo)),
+	)).Methods("PUT")
 
   //Ejemplo de todos
 	r.HandleFunc("/api/todos", handlers.TodoIndex).Methods("GET")

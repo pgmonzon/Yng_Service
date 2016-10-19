@@ -8,7 +8,7 @@ import (
 	"github.com/pgmonzon/Yng_Servicios/models"
 	"github.com/pgmonzon/Yng_Servicios/core"
 
-	//"github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -26,6 +26,63 @@ func EjemploIndex(w http.ResponseWriter, r *http.Request) {
 	}
 	core.JSONResponse(w, r, start, response, http.StatusOK)
 }
+
+// TodoAdd handler to add new todo
+func AgregarEjemplo(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	var ejemplo models.Ejemplo
+	json.NewDecoder(r.Body).Decode(&ejemplo)
+	if ejemplo.Nombre == "" {
+		core.JSONError(w, r, start, "Incorrect body", http.StatusBadRequest)
+		return
+	}
+	objID := bson.NewObjectId()
+	ejemplo.ID = objID
+	//ejemplo.Fecha = time.Now()
+	//log.Println(ejemplo.Fecha.Format(time.RFC1123Z)) //Standard RFC 1123Z: "Mon, 02 Jan 2006 15:04:05 -0700")
+	session := core.Session.Copy()
+	defer session.Close()
+	collection := session.DB(core.Dbname).C("ejemplos")
+	err := collection.Insert(ejemplo)
+	if err != nil {
+		core.JSONError(w, r, start, "Failed to insert todo", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Location", r.URL.Path+"/"+string(ejemplo.ID.Hex()))
+	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
+}
+
+func ModificarEjemplo(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	var ejemplo models.Ejemplo
+	vars := mux.Vars(r)
+	if bson.IsObjectIdHex(vars["ejemploID"]) != true {
+		core.JSONError(w, r, start, "bad entry for id", http.StatusBadRequest)
+		return
+	}
+	json.NewDecoder(r.Body).Decode(&ejemplo)
+	if ejemplo.Nombre == "" {
+		core.JSONError(w, r, start, "Incorrect body", http.StatusBadRequest)
+		return
+	}
+	ejemploID := bson.ObjectIdHex(vars["ejemploID"])
+	session := core.Session.Copy()
+	defer session.Close()
+	collection := session.DB(core.Dbname).C("ejemplos")
+	err := collection.Update(bson.M{"_id": ejemploID},
+		bson.M{"$set": bson.M{"nombre": ejemplo.Nombre, "importe": ejemplo.Importe, "activo": ejemplo.Activo, "borrado": ejemplo.Borrado}})
+	if err != nil {
+		core.JSONError(w, r, start, "Could not find Todo "+string(ejemploID.Hex())+" to update", http.StatusNotFound)
+		return
+	}
+	if(!core.Auditar(r, session, ejemploID)){
+		core.JSONError(w, r, start, "Error interno. Porfavor contactar a un operador", http.StatusInternalServerError)
+	}
+
+	core.JSONResponse(w, r, start, []byte{}, http.StatusNoContent)
+}
+
+
 /*
 //TodoShow handler to show all todos
 func TodoShow(w http.ResponseWriter, r *http.Request) {
@@ -50,30 +107,6 @@ func TodoShow(w http.ResponseWriter, r *http.Request) {
 		}
 		core.JSONResponse(w, r, start, response, http.StatusOK)
 	}
-}
-
-// TodoAdd handler to add new todo
-func TodoAdd(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	var todo models.Todo
-	json.NewDecoder(r.Body).Decode(&todo)
-	if todo.Name == "" {
-		core.JSONError(w, r, start, "Incorrect body", http.StatusBadRequest)
-		return
-	}
-	objID := bson.NewObjectId()
-	todo.ID = objID
-	todo.Created = time.Now()
-	session := core.Session.Copy()
-	defer session.Close()
-	collection := session.DB(core.Dbname).C("todos")
-	err := collection.Insert(todo)
-	if err != nil {
-		core.JSONError(w, r, start, "Failed to insert todo", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Location", r.URL.Path+"/"+string(todo.ID.Hex()))
-	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
 
 //TodoUpdate handler to update a previous todo
