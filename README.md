@@ -1,15 +1,15 @@
-golang-mongodb-microservice-example
-===================================
+Yangee microservicio v0.1
+=========================
 
-This is a small example for a restful service using golang, mongodb and gorilla
+(basado en )
 
-My lab consist in only one app server and one mongodb server
+Golang, mongodb, gorilla, jwt-middleware
 
-Mongodb_Address: "localhost:27017"
+Usar Mongodb_Address: "localhost:27017" en caso que se desee montar una base de datos en mongo propia
 
-APP_Address: "localhost:3113"
+API: "localhost:3113"
 
-List todos:
+Listar todos:
 
 		# curl -i http://localhost:3113/api/todos
 
@@ -83,3 +83,12 @@ Prueba de uso de token:
 Agregar permisos:
 
 		# curl -i -H "Content-Type: application/json" -X POST -d '{"permiso": "AgregarUsuario"}'  http://localhost:3113/api/permisos
+
+Para loguear a la api estoy usando el plugin HttpRequester (firefox). Ejemplo de PUT ejemplos:
+
+		METHOD: PUT
+		URL: localhost:3113/api/ejemplos/5807af7041586016ef21b2e4
+		CONTENT TO SEND: {"nombre":"ejemplo"}
+		HEADERS: Name: Authorization Value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0NzY5NzQyOTEsImlkIjoiNTgwMTNlYzE0MTU4NjAxNWI3MDI4OTViIiwiaXNzIjoieWFuZ2VlYXBwQGdtYWlsLmNvbSJ9.b2rfvTOjKW2PwqXzTnW48XLEXZm6YXJGcdoZRtLB7-U
+
+Donde "5807af7041586016ef21b2e4" es el ID del ejemplo a buscar. Notese que ese token es valido por solo una hora y está expirado. Utilizar /api/login con un usuario válido para obtener otro token.

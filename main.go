@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	log.Printf("Yangee API Service v 0.1")
-	router := routers.NewRouter() // this func is in router.go
-	defer core.Session.Close() // related to Session in db.go
+	log.Printf("Yangee API Service v0.1")
+	router := routers.NewRouter()
+	defer core.Session.Close()
 	log.Fatal(http.ListenAndServe(":3113", router))
 }
