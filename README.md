@@ -1,8 +1,6 @@
 Yangee microservicio v0.1
 =========================
 
-(basado en )
-
 Golang, mongodb, gorilla, jwt-middleware
 
 Usar Mongodb_Address: "localhost:27017" en caso que se desee montar una base de datos en mongo propia
