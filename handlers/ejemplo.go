@@ -75,7 +75,7 @@ func ModificarEjemplo(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Could not find Todo "+string(ejemploID.Hex())+" to update", http.StatusNotFound)
 		return
 	}
-	if(!core.Auditar(r, session, ejemploID)){
+	if(!core.Auditar(r, session, ejemploID, "ejemplos")){
 		core.JSONError(w, r, start, "Error interno. Porfavor contactar a un operador", http.StatusInternalServerError)
 	}
 

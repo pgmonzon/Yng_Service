@@ -14,13 +14,11 @@ type Ejemplo struct {
 	Borrado   bool          `json:"borrado"`
 }
 
-type EjemploAuditoria struct {
+type Auditoria struct {
   ID        bson.ObjectId `bson:"_id" json:"id"`
-  Nombre    string        `json:"nombre"`
-  Importe   int           `json:"importe"`
-  Activo    bool          `json:"activo"`
-  Borrado   bool          `json:"borrado"`
+  NombreTabla string      `json:"nombretabla"`
+  Tabla     interface{}   `json:"tabla"`
   Fecha     time.Time     `json:"fecha"`
-  IDReq     bson.ObjectId `json:"idejemplo"`
+  //IDReq     bson.ObjectId `json:"idrequested"`
   IDUser    bson.ObjectId `json:"iduser"`
 }
