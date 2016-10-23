@@ -77,6 +77,9 @@ func NewRouter() *mux.Router {
 		negroni.Wrap(http.HandlerFunc(handlers.ModificarEjemplo)),
 	)).Methods("PUT")
 
+	//Heroes
+	r.HandleFunc("/api/heroes", handlers.HeroesIndex).Methods("GET")
+
   //Ejemplo de todos
 	r.HandleFunc("/api/todos", handlers.TodoIndex).Methods("GET")
 	r.HandleFunc("/api/todos/{todoID}", handlers.TodoShow).Methods("GET")
