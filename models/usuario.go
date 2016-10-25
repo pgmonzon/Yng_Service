@@ -10,10 +10,10 @@ type Usuario struct {
 	User      string        `json:"user"`
 	Email     string        `json:"email"`
 	PassMD    int32         `json:"md5"`
-	Rol				string				`json:"rol"`
+	Rol				bson.ObjectId `json:"rol"`
 }
 
 type UsuarioCrudo struct {
 	Nombre      string        `json:"user"`
-	Pwd      string        `json:"password"`
+	Pwd         string        `json:"password"`
 }

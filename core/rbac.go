@@ -80,23 +80,21 @@ func extraerInfoUsuario(id string) (models.Usuario, error) {
 	return usuario[0], nil
 }
 
-func extraerPermisosDelRol(id string) (models.RP, error){
+func extraerPermisosDelRol(id bson.ObjectId) (models.RP, error){
   //le das una ID de rol a esta funcion, y te devuelve los permisos que tiene ese Rol (los devuelve en un array)
   var rp []models.RP
   var modelError models.RP
-  if bson.IsObjectIdHex(id) != true { // Un poco de sanity.
-    log.Printf("FATAL ERROR: Id rol invalida.")
-    return modelError, errors.New("Id invalida")
-  }
+
+  id_string := bson.ObjectId.Hex(id)
   session := Session.Copy()
   defer session.Close()
   collection := session.DB(Dbname).C("rp")
-  collection.Find(bson.M{"idrol": id}).All(&rp)
+  collection.Find(bson.M{"idrol": id_string}).All(&rp)
   if (len(rp) == 0) {
     log.Printf("FATAL ERROR: Id invalida. Lo cual significa que /login esta creando tokens con IDs rotas")
     return modelError, errors.New("Id invalida")
   }
-  return rp[0], nil //esto no es ideal, es temporal
+  return rp[0], nil
 }
 
 func extraerInfoPermiso(permiso string) (models.Permisos, error) {
