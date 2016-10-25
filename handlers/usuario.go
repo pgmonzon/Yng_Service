@@ -42,11 +42,9 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 
 	usuario.PassMD = core.HashearMD5(usuario_crudo.Pwd)
 	usuario.User = usuario_crudo.Nombre
-
 	objID := bson.NewObjectId()
 	usuario.ID = objID
 	usuario.Rol = cfg.GuestRol // en cada creacion de usuario, se les asigna un rol que va a ser GUEST
-	log.Println()
 
 	session := core.Session.Copy()
 	defer session.Close()
