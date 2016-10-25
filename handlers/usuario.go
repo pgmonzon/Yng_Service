@@ -33,17 +33,20 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	var usuario models.Usuario			// Se usan dos models porque uno sirve para parsear el r.Body que se pasa en la llamada http
 	var usuarioDB []models.Usuario // mientras que el otro se arma para chequear la base de datos (usuarioDB)
-	json.NewDecoder(r.Body).Decode(&usuario)
-	if (usuario.User == "" || usuario.Pass == "") { //TODO: Esto a futuro debe chequear si el usuario tiene menos de 4 letras o si la contraseña es incorrecta
+	var usuario_crudo models.UsuarioCrudo
+	json.NewDecoder(r.Body).Decode(&usuario_crudo) //Nota: NewDecoder por alguna razon solo funciona 1 vez por handler
+	if (usuario_crudo.Nombre == "" || usuario_crudo.Pwd == "") { //TODO: Esto a futuro debe chequear si el usuario tiene menos de 4 letras o si la contraseña es incorrecta
 		core.JSONError(w, r, start, "Usuario o contraseña invalidas", http.StatusBadRequest)
 		return
 	}
-	usuario.PassMD = core.HashearMD5(usuario.Pass)
+
+	usuario.PassMD = core.HashearMD5(usuario_crudo.Pwd)
+	usuario.User = usuario_crudo.Nombre
 
 	objID := bson.NewObjectId()
 	usuario.ID = objID
 	usuario.Rol = cfg.GuestRol // en cada creacion de usuario, se les asigna un rol que va a ser GUEST
-
+	log.Println()
 
 	session := core.Session.Copy()
 	defer session.Close()
@@ -76,13 +79,13 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
-	var usuario models.Usuario			// mismo concepto que antes
 	var usuarioDB []models.Usuario
-	json.NewDecoder(r.Body).Decode(&usuario)
+	var usuario_crudo models.UsuarioCrudo
+	json.NewDecoder(r.Body).Decode(&usuario_crudo)
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
-	err := collection.Find(bson.M{"user": usuario.User, "passmd": core.HashearMD5(usuario.Pass)}).All(&usuarioDB)
+	err := collection.Find(bson.M{"user": usuario_crudo.Nombre, "passmd": core.HashearMD5(usuario_crudo.Pwd)}).All(&usuarioDB)
 	if err != nil {
 		core.JSONError(w, r, start, "Failed to search user name", http.StatusInternalServerError)
 		return

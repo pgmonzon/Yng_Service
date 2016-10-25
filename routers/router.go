@@ -79,6 +79,8 @@ func NewRouter() *mux.Router {
 
 	//Heroes
 	r.HandleFunc("/api/heroes", handlers.HeroesIndex).Methods("GET")
+	r.HandleFunc("/api/heroes/{heroID}", handlers.HeroesOk).Methods("OPTIONS")
+	r.HandleFunc("/api/heroes/{heroID}", handlers.HeroesUpdate).Methods("PUT")
 
   //Ejemplo de todos
 	r.HandleFunc("/api/todos", handlers.TodoIndex).Methods("GET")
