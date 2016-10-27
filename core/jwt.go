@@ -14,7 +14,7 @@ import (
     //"gopkg.in/mgo.v2/bson"
 )
 
-func CrearToken(usuario models.Usuario) (string) {
+func CrearToken(usuario models.Usuario) (interface{}) {
     // Crea el token
     secreto := []byte(cfg.Secreto)
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -24,7 +24,8 @@ func CrearToken(usuario models.Usuario) (string) {
 		})
     // Crea una string a partir de la key (el secreto)
     tokenString, _ := token.SignedString(secreto)
-    return tokenString
+    token_json := map[string]string{"token": tokenString}
+    return token_json
 }
 
 func ArmarToken(r *http.Request) (models.Token) { //En caso de que se quisiesen guardar los tokens, se hace directo de esta funcion

@@ -15,8 +15,9 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 	session := core.Session.Copy()
 	session.Ping()
 	defer session.Close()
-	respuesta, _ := json.MarshalIndent("Esta capa no tiene seguridad", "", "    ")
-	core.JSONResponse(w, r, start, respuesta, http.StatusOK)
+	//respuesta, _ := json.Marshal("{Esta capa no tiene seguridad}")
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta mierda
+	core.JSONError(w, r, start, "sin seguridad", http.StatusOK)
 }
 
 func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {

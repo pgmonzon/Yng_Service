@@ -30,6 +30,7 @@ func IndexUsuario(w http.ResponseWriter, r *http.Request) {
 
 // Registrar usuarios
 func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
 	var usuario models.Usuario			// Se usan dos models porque uno sirve para parsear el r.Body que se pasa en la llamada http
 	var usuarioDB []models.Usuario // mientras que el otro se arma para chequear la base de datos (usuarioDB)
@@ -69,13 +70,14 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Failed to insert user", http.StatusInternalServerError)
 		return
 	}
-	log.Printf("CREANDO USUARIO: %s PASSWORD: %d", usuario.User, usuario.PassMD) //Notese que la password es la md5
+	log.Printf("CREANDO USUARIO: %s MD5: %d", usuario.User, usuario.PassMD) //Notese que la password es la md5
 	w.Header().Set("Location", r.URL.Path+"/"+string(usuario.ID.Hex()))
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
 
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
 	var usuarioDB []models.Usuario
 	var usuario_crudo models.UsuarioCrudo
@@ -93,37 +95,11 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	if string(response) == "null" {
-		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusNotFound)
+		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusCreated)
 		return
 	}
 	token := core.CrearToken(usuarioDB[0])
-	response, _ = json.MarshalIndent(token,"","      ")
+	response, _ = json.Marshal(token)
+	log.Println(usuarioDB[0].User)
 	core.JSONResponse(w, r, start, response, http.StatusCreated)
-	//BuscarRol()
 }
-
-/*func UserSearchNameJSON(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	var usuario []models.Usuario
-	var usuarioDB models.Usuario
-	json.NewDecoder(r.Body).Decode(&usuarioDB)
-	vars := mux.Vars(r)
-	User := vars["User"]
-	session := core.Session.Copy()
-	defer session.Close()
-	collection := session.DB(core.Dbname).C("usuarios")
-	err := collection.Find(bson.M{"user": usuarioDB.User, "md5": core.HashearMD5(usuarioDB.Pass)}).All(&usuario)
-	if err != nil {
-		core.JSONError(w, r, start, "Failed to search user name", http.StatusInternalServerError)
-		return
-	}
-	response, err := json.MarshalIndent(usuario, "", "    ")
-	if err != nil {
-		panic(err)
-	}
-	if string(response) == "null" {
-		core.JSONError(w, r, start, "Could not find any User containing "+usuarioDB.User+User, http.StatusNotFound)
-		return
-	}
-	core.JSONResponse(w, r, start, response, http.StatusOK)
-}*/

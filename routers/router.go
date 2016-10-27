@@ -43,22 +43,20 @@ func NewRouter() *mux.Router {
 		})
 	//Todo
 	r.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
+	r.HandleFunc("/api/usuarios/login", handlers.HeroesOk).Methods("OPTIONS") //Acordarse de borrar esta mierda
+	r.HandleFunc("/api/usuarios/register", handlers.HeroesOk).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.Handle("/secured/ping", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(handlers.SecuredPingHandler)),
   ))
 
-  //Usuarios, por ahora solo tiene 2 funciones, mostrar usuarios y agregar usuarios
-
-  //r.HandleFunc("/api/usuarios", handlers.IndexUsuario).Methods("GET")
+  //############		USUARIOS		##############
 	r.Handle("/api/usuarios", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(handlers.IndexUsuario)),
 	))
 	r.HandleFunc("/api/usuarios/login", handlers.UserLogin).Methods("POST")
 	r.HandleFunc("/api/usuarios/register", handlers.AgregarUsuario).Methods("POST")
-	//r.HandleFunc("/api/usuarios/search/byname/{User}", handlers.UserSearchName).Methods("GET")
-	//r.HandleFunc("/api/usuarios/search/byname/{User}", handlers.UserSearchNameJSON).Methods("POST")
 
 	//############			RBAC			##############
 	r.HandleFunc("/api/roles", handlers.ListarRoles).Methods("GET")
