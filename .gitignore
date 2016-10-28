@@ -3,3 +3,4 @@ main
 test*.go
 Yng_Servicios
 dependencias
+*.swp
