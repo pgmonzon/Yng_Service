@@ -41,9 +41,8 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func RandStringBytesMaskImprSrc(n int) string {
+func RandStringBytesMaskImprSrc(n int) string { //n es el numero que determina la longitud de la string que van a devolver
     b := make([]byte, n)
-    // A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
     for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
         if remain == 0 {
             cache, remain = src.Int63(), letterIdxMax
