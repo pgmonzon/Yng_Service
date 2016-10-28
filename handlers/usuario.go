@@ -43,7 +43,10 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 
 	usuario.PassMD = core.HashearMD5(usuario_crudo.Pwd)
 	usuario.User = usuario_crudo.Nombre
+	usuario.Email = usuario_crudo.Email
 	objID := bson.NewObjectId()
+
+	usuario.Activado = 0 //Desactivado. Tenemos que mandarle un mail de activacion
 	usuario.ID = objID
 	usuario.Rol = bson.ObjectIdHex(cfg.GuestRol) // en cada creacion de usuario, se les asigna un rol que va a ser GUEST
 
@@ -71,7 +74,9 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("CREANDO USUARIO: %s MD5: %d", usuario.User, usuario.PassMD) //Notese que la password es la md5
-	w.Header().Set("Location", r.URL.Path+"/"+string(usuario.ID.Hex()))
+
+	//Ya podemos mandar nuestro mail de verificacion usando core.EnviarMail(vars)
+	w.Header().Set("Location", r.URL.Path+"/"+string(usuario.ID.Hex())) //que es esto?
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
 
