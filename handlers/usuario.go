@@ -46,7 +46,7 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 	usuario.Email = usuario_crudo.Email
 	objID := bson.NewObjectId()
 
-	usuario.Activado = 0 //Desactivado. Tenemos que mandarle un mail de activacion
+	usuario.Activado = false //Desactivado. Tenemos que mandarle un mail de activacion
 	usuario.ID = objID
 	usuario.Rol = bson.ObjectIdHex(cfg.GuestRol) // en cada creacion de usuario, se les asigna un rol que va a ser GUEST
 
