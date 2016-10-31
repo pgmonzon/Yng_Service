@@ -12,6 +12,5 @@ func main() {
 	log.Printf("Yangee API Service v0.1")
 	router := routers.NewRouter()
 	defer core.Session.Close()
-	core.EnviarMail()
 	log.Fatal(http.ListenAndServe(":3113", router))
 }

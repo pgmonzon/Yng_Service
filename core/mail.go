@@ -7,41 +7,47 @@ import (
     "math/rand"
     "time"
 
+    "github.com/pgmonzon/Yng_Servicios/cfg"
+
     "github.com/scorredoira/email"
+    "gopkg.in/mgo.v2/bson"
 )
 
-func EnviarMail() {
-    // compose the message
-    m := email.NewMessage("Codigo de verificacion", RandStringBytesMaskImprSrc(6))
-    m.From = mail.Address{Name: "Yangee API", Address: "yangeeapp@gmail.com"}
-    m.To = []string{"adrian.diasdacostalima@gmail.com"}
+var src = rand.NewSource(time.Now().UnixNano())
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const (
+	letterIdxBits = 6
+	letterIdxMask = 1<<letterIdxBits - 1
+	letterIdxMax  = 63 / letterIdxBits
+)
 
-    // add attachments
+func EnviarMailDeVerificacion(mail_usuario string, id_usuario bson.ObjectId){
+    codigo_verificacion := crearCodigoDeVerificacion(6)
+    EnviarMail(mail_usuario, codigo_verificacion)
+    updatearCodigoDeVerificacionAlUsuario(codigo_verificacion, id_usuario)
+}
+
+func EnviarMail(mail_usuario string, body string) {
+    m := email.NewMessage("Codigo de verificacion", body)
+    m.From = mail.Address{Name: "Yangee API", Address: cfg.EmailVerificacion}
+    m.To = []string{mail_usuario}
+
+    //Adjuntos:
     /*if err := m.Attach("email.go"); err != nil {
         log.Fatal(err)
     }*/
 
-    // send it
-    auth := smtp.PlainAuth("", "yangeeapp@gmail.com", "la1962ser", "smtp.gmail.com")
+    auth := smtp.PlainAuth("", cfg.EmailVerificacion, cfg.EmailPwd, "smtp.gmail.com")
     if err := email.Send("smtp.gmail.com:587", auth, m); err != nil {
         log.Fatal(err)
     }
 }
 
-var src = rand.NewSource(time.Now().UnixNano())
-const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const (
-    letterIdxBits = 6                    // 6 bits to represent a letter index
-    letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
-    letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
-)
-
-
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func RandStringBytesMaskImprSrc(n int) string { //n es el numero que determina la longitud de la string que van a devolver
+func crearCodigoDeVerificacion(n int) string { //n es el numero que determina la longitud de la string que van a devolver
     b := make([]byte, n)
     for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
         if remain == 0 {
@@ -56,4 +62,15 @@ func RandStringBytesMaskImprSrc(n int) string { //n es el numero que determina l
     }
 
     return string(b)
+}
+
+func updatearCodigoDeVerificacionAlUsuario(codigo string, id_usuario bson.ObjectId) {
+	//var usuario models.Usuario
+
+	creacion := time.Now()
+	session := Session.Copy()
+	defer session.Close()
+	collection := session.DB(Dbname).C("usuarios")
+	collection.Update(bson.M{"_id": id_usuario},
+		bson.M{"$set": bson.M{"codigo": codigo, "creacion": creacion}})
 }

@@ -75,9 +75,10 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("CREANDO USUARIO: %s MD5: %d", usuario.User, usuario.PassMD) //Notese que la password es la md5
 
-	//Ya podemos mandar nuestro mail de verificacion usando core.EnviarMail(vars)
-	w.Header().Set("Location", r.URL.Path+"/"+string(usuario.ID.Hex())) //que es esto?
-	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
+	core.EnviarMailDeVerificacion(usuario.Email, usuario.ID)
+
+	response, _ = json.Marshal("Usuario creado satisfactoriamente")
+	core.JSONResponse(w, r, start, response, http.StatusCreated)
 }
 
 

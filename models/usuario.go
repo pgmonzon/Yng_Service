@@ -2,6 +2,7 @@ package models
 
 import (
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 //Todo struct to todo
@@ -11,6 +12,8 @@ type Usuario struct {
 	Email     string        `json:"email"`
 	PassMD    int32         `json:"md5"`
 	Activado  bool		`json:"activado"`
+	Codigo    string	`json:"codigo"`
+	Creacion  time.Time	`json:"creacion"`
 	Rol	  bson.ObjectId `json:"rol"`
 }
 
