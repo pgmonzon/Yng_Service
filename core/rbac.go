@@ -13,7 +13,7 @@ import (
 
 func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
   // esta funcion se encarga de responder SI o NO a la pregunta "¿tiene este usuario permisos para ejecutar lo que me esta pidiendo?"
-  id := extraerClaim(r, "id")
+  id := ExtraerClaim(r, "id")
   permiso, err := extraerInfoPermiso(permisoBuscado)
   if (err != nil) { return false }
   if (!permiso.Activo || permiso.Borrado){

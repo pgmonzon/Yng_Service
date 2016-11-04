@@ -22,3 +22,7 @@ type UsuarioCrudo struct {
 	Pwd		string		`json:"password"`
 	Email		string		`json:"email"`
 }
+
+type UsuarioCodigo struct {
+	Codigo	string	`json:"codigo"`
+}

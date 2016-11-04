@@ -16,7 +16,7 @@ import (
 func Auditar(r *http.Request, session *mgo.Session, id_bson bson.ObjectId, nombre_tabla string) (bool){
   var ejemplos []models.Ejemplo
   var auditoria models.Auditoria
-  id_user := extraerClaim(r, "id")
+  id_user := ExtraerClaim(r, "id")
   log.Println("la id del usuario es la siguiente, string o interface?", id_user)
   if id_user == ""{
     return false  //Esto sería un error más que falta de permisos (no existe el campo id en el token o es un token invalido). Hay que buscar la forma de manejar estos errores

@@ -36,8 +36,8 @@ func AgregarUsuario(w http.ResponseWriter, r *http.Request) {
 	var usuarioDB []models.Usuario // mientras que el otro se arma para chequear la base de datos (usuarioDB)
 	var usuario_crudo models.UsuarioCrudo
 	json.NewDecoder(r.Body).Decode(&usuario_crudo) //Nota: NewDecoder por alguna razon solo funciona 1 vez por handler
-	if (usuario_crudo.Nombre == "" || usuario_crudo.Pwd == "") { //TODO: Esto a futuro debe chequear si el usuario tiene menos de 4 letras o si la contraseña es incorrecta
-		core.JSONError(w, r, start, "Usuario o contraseña invalidas", http.StatusBadRequest)
+	if (usuario_crudo.Nombre == "" || usuario_crudo.Pwd == "" || usuario_crudo.Email == "") { //TODO: Esto a futuro debe chequear si el usuario tiene menos de 4 letras o si la contraseña es incorrecta
+		core.JSONError(w, r, start, "Usuario, contraseña o email invalidas", http.StatusBadRequest)
 		return
 	}
 
@@ -107,5 +107,37 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	token := core.CrearToken(usuarioDB[0])
 	response, _ = json.Marshal(token)
 	log.Println(usuarioDB[0].User)
+	core.JSONResponse(w, r, start, response, http.StatusCreated)
+}
+
+
+func VerificarUsuario(w http.ResponseWriter, r *http.Request) {
+	//Chequeamos si el codigo que nos estan mandando es el mismo guardado en la base de datos.
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
+	start := time.Now()
+	var lista_usuarios []models.Usuario
+	var codigo models.UsuarioCodigo
+	json.NewDecoder(r.Body).Decode(&codigo)
+	session := core.Session.Copy()
+	defer session.Close()
+	collection := session.DB(core.Dbname).C("usuarios")
+	id := core.ExtraerClaim(r, "id")
+	id_bson := bson.ObjectIdHex(id.(string))
+
+	err := collection.Find(bson.M{"_id": id_bson}).All(&lista_usuarios)
+	if err != nil {
+		core.JSONError(w, r, start, "Failed to search user name", http.StatusInternalServerError)
+		return
+	}
+	response, err := json.Marshal(lista_usuarios)
+	if err != nil {
+		panic(err)
+	}
+	if string(response) == "null" {
+		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusCreated)
+		return
+	}
+	response, _ = json.Marshal(lista_usuarios[0].Codigo)
+	log.Println(lista_usuarios[0].Codigo)
 	core.JSONResponse(w, r, start, response, http.StatusCreated)
 }
