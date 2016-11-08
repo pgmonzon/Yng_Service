@@ -22,7 +22,7 @@ const (
 )
 
 func EnviarMailDeVerificacion(mail_usuario string, id_usuario bson.ObjectId){
-    codigo_verificacion := crearCodigoDeVerificacion(6)
+    codigo_verificacion := CrearCodigoDeVerificacion(6)
     EnviarMail(mail_usuario, codigo_verificacion)
     updatearCodigoDeVerificacionAlUsuario(codigo_verificacion, id_usuario)
 }
@@ -47,7 +47,7 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func crearCodigoDeVerificacion(n int) string { //n es el numero que determina la longitud de la string que van a devolver
+func CrearCodigoDeVerificacion(n int) string { //n es el numero que determina la longitud de la string que van a devolver
     b := make([]byte, n)
     for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
         if remain == 0 {
