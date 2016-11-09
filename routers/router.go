@@ -43,9 +43,10 @@ func NewRouter() *mux.Router {
 		})
 	//Todo
 	r.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
-	r.HandleFunc("/api/usuarios/login", handlers.HeroesOk).Methods("OPTIONS") //Acordarse de borrar esta mierda
-	r.HandleFunc("/api/usuarios/register", handlers.HeroesOk).Methods("OPTIONS") //Acordarse de borrar esta mierda
-	r.HandleFunc("/api/usuarios/verificar", handlers.HeroesOk).Methods("OPTIONS") //Acordarse de borrar esta mierda
+	r.HandleFunc("/api/usuarios/login", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
+	r.HandleFunc("/api/heroes/{heroID}", handlers.SetearHeaders).Methods("OPTIONS")
+	r.HandleFunc("/api/usuarios/register", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
+	r.HandleFunc("/api/usuarios/verificar", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.Handle("/secured/ping", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(handlers.SecuredPingHandler)),
@@ -61,8 +62,7 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/usuarios/recuperar", usuarios.RecuperarPassword).Methods("GET")
 	r.Handle("/api/usuarios/verificar", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
-		negroni.Wrap(http.HandlerFunc(usuarios.Verificar)),
-	))
+		negroni.Wrap(http.HandlerFunc(usuarios.Verificar)),))
 
 	//##############	RBAC		###############
 	r.HandleFunc("/api/roles", handlers.ListarRoles).Methods("GET")
@@ -79,12 +79,11 @@ func NewRouter() *mux.Router {
 		negroni.Wrap(http.HandlerFunc(handlers.ModificarEjemplo)),
 	)).Methods("PUT")
 
-	//Heroes
+	//##############	HEROES	###############
 	r.HandleFunc("/api/heroes", handlers.HeroesIndex).Methods("GET")
-	r.HandleFunc("/api/heroes/{heroID}", handlers.HeroesOk).Methods("OPTIONS")
 	r.HandleFunc("/api/heroes/{heroID}", handlers.HeroesUpdate).Methods("PUT")
 
-	//Ejemplo de todos
+	//##############	TODOS		###############
 	r.HandleFunc("/api/todos", handlers.TodoIndex).Methods("GET")
 	r.HandleFunc("/api/todos/{todoID}", handlers.TodoShow).Methods("GET")
 	r.HandleFunc("/api/todos", handlers.TodoAdd).Methods("POST")
