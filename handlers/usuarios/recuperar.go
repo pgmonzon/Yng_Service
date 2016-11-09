@@ -5,27 +5,26 @@ package usuarios
  */
 
  import (
- 	//"encoding/json"
+ 	"encoding/json"
  	"net/http"
  	"time"
- 	"log"
+ 	//"log"
 
- 	//"github.com/pgmonzon/Yng_Servicios/models"
+ 	"github.com/pgmonzon/Yng_Servicios/models"
  	"github.com/pgmonzon/Yng_Servicios/core"
  	//"github.com/pgmonzon/Yng_Servicios/cfg"
 
  	//"github.com/gorilla/mux"
- 	//"gopkg.in/mgo.v2/bson"
+ 	"gopkg.in/mgo.v2/bson"
  )
 
-func EnviarMailConCodigo(w http.ResponseWriter, r *http.Request) {
+func RecuperarPassword(w http.ResponseWriter, r *http.Request) {
 	//Recibe un mail, le decimos cual es su usuario y le damos un codigo para que pueda crear una nueva password
 	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
 	var lista_usuarios []models.Usuario
 	var usuario models.UsuarioCrudo
   json.NewDecoder(r.Body).Decode(&usuario)
-  nuevoCodigo := core.CrearCodigoDeVerificacion(6)
 
   session := core.Session.Copy()
   defer session.Close()
@@ -37,7 +36,7 @@ func EnviarMailConCodigo(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  //falta updatear el codigo yyyyyyyyyyyyyyyyyy mandar el mail
+  core.EnviarMailDeVerificacion(lista_usuarios[0].Email, lista_usuarios[0].ID)
 
   core.JSONError(w, r, start, "nais", http.StatusOK)
 }

@@ -58,7 +58,7 @@ func NewRouter() *mux.Router {
 		negroni.Wrap(http.HandlerFunc(handlers.IndexUsuario)),
 	))
 	r.HandleFunc("/api/usuarios/login", handlers.UserLogin).Methods("POST")
-	r.HandleFunc("/api/usuarios/register", handlers.AgregarUsuario).Methods("POST")
+	r.HandleFunc("/api/usuarios/register", usuarios.RegistrarUsuario).Methods("POST")
 	r.HandleFunc("/api/usuarios/recuperar", usuarios.RecuperarPassword).Methods("GET")
 	r.Handle("/api/usuarios/verificar", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),

@@ -22,6 +22,7 @@ const (
 )
 
 func EnviarMailDeVerificacion(mail_usuario string, id_usuario bson.ObjectId){
+    // Crea un codigo de verificacion nuevo, ENVIA este codigo a la persona, y lo modifica en la base de datos
     codigo_verificacion := CrearCodigoDeVerificacion(6)
     EnviarMail(mail_usuario, codigo_verificacion)
     updatearCodigoDeVerificacionAlUsuario(codigo_verificacion, id_usuario)
