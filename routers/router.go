@@ -32,11 +32,10 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 //NewRouter creates the router
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(false)
-	secret := cfg.Secreto
 
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-				return []byte(secret), nil
+				return []byte(cfg.Secreto), nil
 			},
 			SigningMethod: jwt.SigningMethodHS256,
 			/*Extractor: jwtmiddleware.FromFirst(jwtmiddleware.FromAuthHeader,
@@ -55,14 +54,14 @@ func NewRouter() *mux.Router {
 	//###############	USUARIOS	###############
 	r.Handle("/api/usuarios", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
-		negroni.Wrap(http.HandlerFunc(handlers.IndexUsuario)),
+		negroni.Wrap(http.HandlerFunc(usuarios.Index)),
 	))
-	r.HandleFunc("/api/usuarios/login", handlers.UserLogin).Methods("POST")
-	r.HandleFunc("/api/usuarios/register", usuarios.RegistrarUsuario).Methods("POST")
+	r.HandleFunc("/api/usuarios/login", usuarios.Login).Methods("POST")
+	r.HandleFunc("/api/usuarios/register", usuarios.Registrar).Methods("POST")
 	r.HandleFunc("/api/usuarios/recuperar", usuarios.RecuperarPassword).Methods("GET")
 	r.Handle("/api/usuarios/verificar", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
-		negroni.Wrap(http.HandlerFunc(handlers.VerificarUsuario)),
+		negroni.Wrap(http.HandlerFunc(usuarios.Verificar)),
 	))
 
 	//##############	RBAC		###############

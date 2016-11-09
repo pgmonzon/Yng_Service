@@ -15,7 +15,7 @@ import (
 )
 
 // Registrar usuarios
-func RegistrarUsuario(w http.ResponseWriter, r *http.Request) {
+func Registrar(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
 	var usuario models.Usuario

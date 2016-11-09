@@ -8,14 +8,14 @@ import (
 
 	"github.com/pgmonzon/Yng_Servicios/models"
 	"github.com/pgmonzon/Yng_Servicios/core"
-	"github.com/pgmonzon/Yng_Servicios/cfg"
+	//"github.com/pgmonzon/Yng_Servicios/cfg"
 
 	//"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
 )
 
 
-func UserLogin(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
 	var lista_usuarios []models.Usuario
