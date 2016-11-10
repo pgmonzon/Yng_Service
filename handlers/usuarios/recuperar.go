@@ -8,7 +8,7 @@ package usuarios
  	"encoding/json"
  	"net/http"
  	"time"
- 	//"log"
+ 	"log"
 
  	"github.com/pgmonzon/Yng_Servicios/models"
  	"github.com/pgmonzon/Yng_Servicios/core"
@@ -25,6 +25,7 @@ func RecuperarPassword(w http.ResponseWriter, r *http.Request) {
 	var lista_usuarios []models.Usuario
 	var usuario models.UsuarioCrudo
   json.NewDecoder(r.Body).Decode(&usuario)
+  log.Println(usuario, usuario.Email)
 
   session := core.Session.Copy()
   defer session.Close()
