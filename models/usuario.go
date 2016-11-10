@@ -26,3 +26,8 @@ type UsuarioCrudo struct {
 type UsuarioCodigo struct {
 	Codigo	string	`json:"codigo"`
 }
+
+type UsuarioRecuperar struct {
+	Email		string		`json:"email"`
+	Codigo		string		`json:"codigo"`
+}
