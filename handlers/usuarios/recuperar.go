@@ -78,3 +78,31 @@ func RecibirCodigoDeRecuperacion(w http.ResponseWriter, r *http.Request) {
     core.JSONError(w, r, start, "El código no es correcto", http.StatusInternalServerError)
 	}
 }
+
+func CambiarContrasena(w http.ResponseWriter, r *http.Request) {
+	//En realidad esta función no debería ir acá, pero bueno, por el momento acá se queda.
+  //Llamamos a esta funcion con un token y la contraseña nueva y las cambia.
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
+	start := time.Now()
+	var usuario models.UsuarioRecuperar
+	json.NewDecoder(r.Body).Decode(&usuario)
+
+	session := core.Session.Copy()
+	defer session.Close()
+	collection := session.DB(core.Dbname).C("usuarios")
+
+  id_usuario := core.ExtraerClaim(r, "id")
+  id_bson := bson.ObjectIdHex(id_usuario.(string))
+  log.Println(id_bson)
+
+  err := collection.Update(bson.M{"_id": id_bson},
+		bson.M{"$set": bson.M{"passmd": core.HashearMD5(usuario.Pwd)}})
+	if err != nil {
+		core.JSONError(w, r, start, "La base de datos está caida", http.StatusInternalServerError)
+		return
+	}
+  log.Println("Cambiando contraseña del usuario con id ", id_usuario)
+
+  response, _ := json.Marshal("todo ok papa")
+  core.JSONResponse(w, r, start, response, http.StatusOK)
+}

@@ -47,6 +47,7 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/heroes/{heroID}", handlers.SetearHeaders).Methods("OPTIONS")
 	r.HandleFunc("/api/usuarios/register", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.HandleFunc("/api/usuarios/verificar", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
+	r.HandleFunc("/api/usuarios/cambiarcontrasena", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.Handle("/secured/ping", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(handlers.SecuredPingHandler)),
@@ -64,6 +65,9 @@ func NewRouter() *mux.Router {
 	r.Handle("/api/usuarios/verificar", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(usuarios.Verificar)),))
+	r.Handle("/api/usuarios/cambiarcontrasena", negroni.New(
+		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
+		negroni.Wrap(http.HandlerFunc(usuarios.CambiarContrasena)),))
 
 	//##############	RBAC		###############
 	r.HandleFunc("/api/roles", handlers.ListarRoles).Methods("GET")

@@ -30,4 +30,5 @@ type UsuarioCodigo struct {
 type UsuarioRecuperar struct {
 	Email		string		`json:"email"`
 	Codigo		string		`json:"codigo"`
+	Pwd				string		`json:"password"`
 }
