@@ -11,10 +11,18 @@ type Usuario struct {
 	User      string        `json:"user"`
 	Email     string        `json:"email"`
 	PassMD    int32         `json:"md5"`
+	Facebook  UsuarioFacebook `json:"facebook"`
 	Activado  bool		`json:"activado"`
 	Codigo    string	`json:"codigo"`
 	Creacion  time.Time	`json:"creacion"`
 	Rol	  bson.ObjectId `json:"rol"`
+}
+
+type UsuarioFacebook struct {
+	ID       string        `json:"id"`
+	Name		 string				 `json:"name"`
+	Link     string        `json:"link"`
+	Email    string        `json:"email"`
 }
 
 type UsuarioCrudo struct {
