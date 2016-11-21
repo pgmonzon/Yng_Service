@@ -65,3 +65,11 @@ func Registrar(w http.ResponseWriter, r *http.Request) {
 	response, _ = json.Marshal("Usuario creado satisfactoriamente")
 	core.JSONResponse(w, r, start, response, http.StatusCreated)
 }
+
+func RegistrarFacebook(w http.ResponseWriter, r *http.Request, usuario_facebook models.UsuarioFacebook){
+	var usuario models.Usuario
+	usuario.Facebook = usuario_facebook
+	usuario.Email = usuario_facebook.Email
+	log.Println(usuario)
+	log.Println(usuario.Facebook)
+}
