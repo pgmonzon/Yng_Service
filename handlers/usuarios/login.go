@@ -53,7 +53,6 @@ func ChequearSocialLogin(w http.ResponseWriter, r *http.Request) (bool) {
 	var usuario_facebook models.UsuarioFacebook
 	json.NewDecoder(r.Body).Decode(&usuario_facebook)
 
-	log.Println(usuario_facebook)
 	if (len(usuario_facebook.ID) == 0 ){
 		log.Println("NO ES LOGIN DE FACEBOOK. PROBANDO CON LOGIN NORMAL")
 		return false
@@ -65,13 +64,16 @@ func ChequearSocialLogin(w http.ResponseWriter, r *http.Request) (bool) {
 func FacebookLogin(w http.ResponseWriter, r *http.Request, usuario_facebook models.UsuarioFacebook) {
 	//Login de facebook, el chequeo dio positivo asi que tenemos que loguear O registrar en caso de que no exista el usuario.
 	var lista_usuarios_facebook []models.Usuario
+
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
+
 	collection.Find(bson.M{"facebook.id": usuario_facebook.ID} ).All(&lista_usuarios_facebook)
 	if (len(lista_usuarios_facebook) == 0){
 		log.Println("NO SE ENCONTRÓ REGISTRO DE FACEBOOK. CREANDO...")
 		RegistrarFacebook(w, r, usuario_facebook)
+	} else {
+		log.Println("LOGIN FACEBOOK EXITOSO DE: ", usuario_facebook.ID)
 	}
-	//log.Println(lista_usuarios_facebook[0], "ES LA LISTA DE USUARIOS CON ID: ", usuario_facebook.ID)
 }

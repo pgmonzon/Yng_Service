@@ -68,8 +68,32 @@ func Registrar(w http.ResponseWriter, r *http.Request) {
 
 func RegistrarFacebook(w http.ResponseWriter, r *http.Request, usuario_facebook models.UsuarioFacebook){
 	var usuario models.Usuario
+	var lista_usuarios []models.Usuario
+	start := time.Now()
+
+
+	usuario.ID = bson.NewObjectId()
 	usuario.Facebook = usuario_facebook
 	usuario.Email = usuario_facebook.Email
-	log.Println(usuario)
-	log.Println(usuario.Facebook)
+	usuario.Rol = bson.ObjectIdHex(cfg.GuestRol)
+	usuario.Activado = true
+	usuario.Creacion = time.Now()
+
+	session := core.Session.Copy()
+	defer session.Close()
+	collection := session.DB(core.Dbname).C("usuarios")
+
+	err := collection.Find(bson.M{"facebook.ID": usuario.Facebook.ID}).All(&lista_usuarios)
+	if err != nil {
+		core.JSONError(w, r, start, "La base de datos esta caida", http.StatusInternalServerError)
+		return
+	}
+
+	err = collection.Insert(usuario)
+	if err != nil {
+		core.JSONError(w, r, start, "Failed to insert user", http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("Usuario de facebook creado satisfactoriamente: ", usuario.Facebook.Name)
 }
