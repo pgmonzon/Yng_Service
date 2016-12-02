@@ -14,23 +14,24 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-
 func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
-	if (ChequearSocialLogin(w, r)) {
+	/*var copyr *http.Request
+	if (ChequearSocialLogin(w, copyr)) {
 		return
-	}
+	}*/ //Arreglar el problema de pointers de acá
 	start := time.Now()
 	var lista_usuarios []models.Usuario
 	var usuario_crudo models.UsuarioCrudo
 	json.NewDecoder(r.Body).Decode(&usuario_crudo)
+	log.Println(usuario_crudo)
 	session := core.Session.Copy()
 	defer session.Close()
 	collection := session.DB(core.Dbname).C("usuarios")
 
 	err := collection.Find(bson.M{"user": usuario_crudo.Nombre, "passmd": core.HashearMD5(usuario_crudo.Pwd)}).All(&lista_usuarios)
 	if err != nil {
-		core.JSONError(w, r, start, "Failed to search user name", http.StatusInternalServerError)
+		core.JSONError(w, r, start, "La base de datos esta caida o hubo un error de conexion", http.StatusInternalServerError)
 		return
 	}
 	response, err := json.Marshal(lista_usuarios)
@@ -38,7 +39,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	if string(response) == "null" {
-		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusBadRequest)
+		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusOK)
 		return
 	}
 	token := core.CrearToken(lista_usuarios[0])
