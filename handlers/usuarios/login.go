@@ -39,11 +39,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	if string(response) == "null" {
-		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusOK)
+		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusNoContent)
 		return
 	}
 	token := core.CrearToken(lista_usuarios[0])
 	response, _ = json.Marshal(token)
+
+	if (lista_usuarios[0].Activado == false) {
+		core.JSONError(w, r, start, "Falta codigo de activacion", http.StatusAccepted)
+		return
+	}
+
 	log.Println(lista_usuarios[0].User, " se ha logueado satisfactoriamente")
 	core.JSONResponse(w, r, start, response, http.StatusCreated)
 }
