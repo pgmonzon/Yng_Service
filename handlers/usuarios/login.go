@@ -46,7 +46,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	response, _ = json.Marshal(token)
 
 	if (lista_usuarios[0].Activado == false) {
-		core.JSONError(w, r, start, "Falta codigo de activacion", http.StatusAccepted)
+		core.JSONResponse(w, r, start, response, http.StatusAccepted) //Está todo bien salvo que devolvemos codigo 202 en vez de 201. 202 significa que falta activar
 		return
 	}
 
