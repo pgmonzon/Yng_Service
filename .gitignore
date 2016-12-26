@@ -1,0 +1,7 @@
+# Programa compilado
+main
+test*.go
+Yng_Servicios
+dependencias
+*.swp
+log/*

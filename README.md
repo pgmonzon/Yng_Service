@@ -1,15 +1,13 @@
-golang-mongodb-microservice-example
-===================================
+Yangee microservicio v0.1
+=========================
 
-This is a small example for a restful service using golang, mongodb and gorilla
+Golang, mongodb, gorilla, jwt-middleware
 
-My lab consist in only one app server and one mongodb server
+Usar Mongodb_Address: "localhost:27017" en caso que se desee montar una base de datos en mongo propia
 
-Mongodb_Address: "localhost:27017"
+API: "localhost:3113"
 
-APP_Address: "localhost:3113"
-
-List todos:
+Listar todos:
 
 		# curl -i http://localhost:3113/api/todos
 
@@ -75,3 +73,20 @@ Log samples:
 		2016/05/29 22:56:51 192.168.0.100:46354	GET	/api/todos/search/byname/Tas	HTTP/1.1	200	815	684.036µs
 		2016/05/29 22:57:37 192.168.0.100:46357	GET	/api/todos/search/bystatus/true	HTTP/1.1	200	163	616.616µs
 		2016/05/29 22:57:41 192.168.0.100:46358	GET	/api/todos/search/bystatus/false	HTTP/1.1	200	654	623.589µs
+
+Prueba de uso de token:
+
+		# curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2p3dC1pZHAuZXhhbXBsZS5jb20iLCJzdWIiOiJhZHJpYW4uZGlhc2RhY29zdGFsaW1hQGdtYWlsLmNvbSIsIm5iZiI6MTQ3NTY3MDc2OSwiZXhwIjoxNDc1Njc0MzY5LCJpYXQiOjE0NzU2NzA3NjksImp0aSI6ImlkMTIzNDU2IiwidHlwIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9yZWdpc3RlciJ9.0p0BA2YzbpP1VxpckDUdLE4v86eir92ETH-SB4nThgI" http://localhost:3113/secured/ping
+
+Agregar permisos:
+
+		# curl -i -H "Content-Type: application/json" -X POST -d '{"permiso": "AgregarUsuario"}'  http://localhost:3113/api/permisos
+
+Para loguear a la api estoy usando el plugin HttpRequester (firefox). Ejemplo de PUT ejemplos:
+
+		METHOD: PUT
+		URL: localhost:3113/api/ejemplos/5807af7041586016ef21b2e4
+		CONTENT TO SEND: {"nombre":"ejemplo"}
+		HEADERS: Name: Authorization Value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0NzY5NzQyOTEsImlkIjoiNTgwMTNlYzE0MTU4NjAxNWI3MDI4OTViIiwiaXNzIjoieWFuZ2VlYXBwQGdtYWlsLmNvbSJ9.b2rfvTOjKW2PwqXzTnW48XLEXZm6YXJGcdoZRtLB7-U
+
+Donde "5807af7041586016ef21b2e4" es el ID del ejemplo a buscar. Notese que ese token es valido por solo una hora y está expirado. Utilizar /api/login con un usuario válido para obtener otro token.
