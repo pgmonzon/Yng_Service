@@ -53,7 +53,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	log.Println(lista_usuarios[0].User, " se ha logueado satisfactoriamente")
 	core.JSONResponse(w, r, start, response, http.StatusCreated)
 }
-
+/*
 func ChequearSocialLogin(w http.ResponseWriter, r *http.Request) (bool) {
 	//Chequeamos si el login viene desde google o facebook
 	// Por el momento chequeamos si es facebook
@@ -67,10 +67,16 @@ func ChequearSocialLogin(w http.ResponseWriter, r *http.Request) (bool) {
 	FacebookLogin(w, r, usuario_facebook)
 	return true
 }
+*/
 
-func FacebookLogin(w http.ResponseWriter, r *http.Request, usuario_facebook models.UsuarioFacebook) {
+func FacebookLogin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
+
 	//Login de facebook, el chequeo dio positivo asi que tenemos que loguear O registrar en caso de que no exista el usuario.
+	var usuario_facebook models.UsuarioFacebook
 	var lista_usuarios_facebook []models.Usuario
+
+	json.NewDecoder(r.Body).Decode(&usuario_facebook)
 
 	session := core.Session.Copy()
 	defer session.Close()

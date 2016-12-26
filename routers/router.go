@@ -9,8 +9,8 @@ import (
 	"github.com/pgmonzon/Yng_Servicios/handlers/usuarios"
 	"github.com/pgmonzon/Yng_Servicios/cfg"
 
-  "github.com/auth0/go-jwt-middleware"
-  "github.com/codegangsta/negroni"
+	"github.com/auth0/go-jwt-middleware"
+	"github.com/codegangsta/negroni"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 )
@@ -44,6 +44,7 @@ func NewRouter() *mux.Router {
 	//Todo
 	r.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
 	r.HandleFunc("/api/usuarios/login", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
+	r.HandleFunc("/api/usuarios/fblogin", handlers.SetearHeaders).Methods("OPTIONS")
 	r.HandleFunc("/api/heroes/{heroID}", handlers.SetearHeaders).Methods("OPTIONS")
 	r.HandleFunc("/api/usuarios/register", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.HandleFunc("/api/usuarios/verificar", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
@@ -59,6 +60,7 @@ func NewRouter() *mux.Router {
 		negroni.Wrap(http.HandlerFunc(usuarios.Index)),
 	))
 	r.HandleFunc("/api/usuarios/login", usuarios.Login).Methods("POST")
+	r.HandleFunc("/api/usuarios/fblogin", usuarios.FacebookLogin).Methods("POST")
 	r.HandleFunc("/api/usuarios/register", usuarios.Registrar).Methods("POST")
 	r.HandleFunc("/api/usuarios/recuperar", usuarios.RecuperarPassword).Methods("POST")
 	r.HandleFunc("/api/usuarios/recuperar/enviarcodigo", usuarios.RecibirCodigoDeRecuperacion).Methods("POST")

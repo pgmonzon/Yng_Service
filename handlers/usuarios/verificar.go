@@ -40,22 +40,28 @@ func Verificar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if (codigo.Codigo == lista_usuarios[0].Codigo) {
+		log.Println(codigo.Codigo, "matchea con la base de datos")
+	} else {
+		log.Println(codigo.Codigo, "no matchea con", lista_usuarios[0].Codigo)
+		core.JSONError(w, r, start, "Codigo incorrecto", http.StatusNoContent)
+		return
+	}
+
+
+
 	err = collection.Update(bson.M{"_id": id_bson},
 		bson.M{"$set": bson.M{"activado": true}})
-	response, err := json.Marshal(lista_usuarios)
+	response, err := json.Marshal(lista_usuarios) //hace algo esto??
 	if err != nil {
 		panic(err)
 	}
 	if string(response) == "null" {
-		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusCreated)
+		core.JSONError(w, r, start, "Usuario o clave incorrectas", http.StatusInternalServerError)
 		return
 	}
-	response, _ = json.Marshal(lista_usuarios[0].Codigo)
+	response, _ = json.Marshal(lista_usuarios[0].Activado)
 	log.Println(lista_usuarios[0].Codigo)
-	if (codigo.Codigo == lista_usuarios[0].Codigo) {
-		log.Println(codigo.Codigo, " matchea con la base de datos")
-	}	else {
-		log.Println(codigo.Codigo, " no matchea con", lista_usuarios[0].Codigo)
-	}
+
 	core.JSONResponse(w, r, start, response, http.StatusCreated)
 }

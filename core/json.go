@@ -1,16 +1,21 @@
 package core
 
 import (
-  "encoding/json"
-  "time"
-  "log"
+	"encoding/json"
+	"time"
+	"log"
 	"net/http"
+
+	"github.com/pgmonzon/Yng_Servicios/cfg"
 )
 
 //JSONResponse function to help in responses
 func JSONResponse(w http.ResponseWriter, r *http.Request, start time.Time, response []byte, code int) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
+	if(cfg.DbLog){
+		DatabaseLog(time.Since(start), r)
+	}
 	log.Printf("%s\t%s\t%s\t%s\t%d\t%d\t%s",
 		r.RemoteAddr,
 		r.Method,
@@ -34,6 +39,9 @@ func JSONError(w http.ResponseWriter, r *http.Request, start time.Time, message 
 	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
+	if(cfg.DbLog){
+		DatabaseLog(time.Since(start), r)
+	}
 	log.Printf("%s\t%s\t%s\t%s\t%d\t%d\t%s",
 		r.RemoteAddr,
 		r.Method,
