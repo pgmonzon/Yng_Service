@@ -61,9 +61,9 @@ func Registrar(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("CREANDO USUARIO: %s MD5: %d", usuario.User, usuario.PassMD) //Notese que la password es la md5
-	core.EnviarMailDeVerificacion(usuario.Email, usuario.ID)
 	response, _ = json.Marshal("Usuario creado satisfactoriamente")
 	core.JSONResponse(w, r, start, response, http.StatusCreated)
+	core.EnviarMailDeVerificacion(usuario.Email, usuario.ID)
 }
 
 func RegistrarFacebook(w http.ResponseWriter, r *http.Request, usuario_facebook models.UsuarioFacebook){
