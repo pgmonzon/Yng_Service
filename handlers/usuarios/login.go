@@ -24,9 +24,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var lista_usuarios []models.Usuario
 	var usuario_crudo models.UsuarioCrudo
 	json.NewDecoder(r.Body).Decode(&usuario_crudo)
-	log.Println(usuario_crudo)
+	//log.Println(usuario_crudo)
 	session := core.Session.Copy()
 	defer session.Close()
+
 	collection := session.DB(core.Dbname).C("usuarios")
 
 	err := collection.Find(bson.M{"user": usuario_crudo.Nombre, "passmd": core.HashearMD5(usuario_crudo.Pwd)}).All(&lista_usuarios)

@@ -3,8 +3,8 @@ package core
 import "gopkg.in/mgo.v2"
 
 //Host establece el path de la base de datos
-//var Host = "mongodb://yng_user:laser@ds021326.mlab.com:21326/yangee"
-var Host = "mongodb://127.0.0.1:27017"
+var Host = "mongodb://yng_user:laser@ds021326.mlab.com:21326/yangee"
+//var Host = "mongodb://127.0.0.1:27017"
 
 //dbName establece el nombre de la base de datos
 var Dbname = "yangee"

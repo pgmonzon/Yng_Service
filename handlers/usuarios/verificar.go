@@ -17,7 +17,8 @@ import (
 )
 
 func Verificar(w http.ResponseWriter, r *http.Request) {
-	//Chequeamos si el codigo que nos estan mandando es el mismo que el guardado en la base de datos.
+	//Verifica el codigo de activacion luego de registrarnos.
+	//Esto se hace chequeando si el codigo que nos estan mandando es el mismo que el guardado en la base de datos.
 	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
 	var lista_usuarios []models.Usuario
@@ -41,7 +42,7 @@ func Verificar(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if (codigo.Codigo == lista_usuarios[0].Codigo) {
-		log.Println(codigo.Codigo, "matchea con la base de datos")
+		log.Println(lista_usuarios[0].User, "acaba de activar su cuenta con el codigo", codigo.Codigo, ".")
 	} else {
 		log.Println(codigo.Codigo, "no matchea con", lista_usuarios[0].Codigo)
 		core.JSONError(w, r, start, "Codigo incorrecto", http.StatusNoContent)
@@ -61,7 +62,5 @@ func Verificar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response, _ = json.Marshal(lista_usuarios[0].Activado)
-	log.Println(lista_usuarios[0].Codigo)
-
 	core.JSONResponse(w, r, start, response, http.StatusCreated)
 }
