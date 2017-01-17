@@ -5,11 +5,12 @@ import (
     "encoding/json"
     "net/http"
     "time"
+    "log"
+    "strings"
 
     "github.com/pgmonzon/Yng_Servicios/models"
     "github.com/pgmonzon/Yng_Servicios/cfg"
 
-    "github.com/gorilla/context"
     "github.com/dgrijalva/jwt-go"
     //"gopkg.in/mgo.v2/bson"
 )
@@ -19,7 +20,7 @@ func CrearToken(usuario models.Usuario) (interface{}) {
     secreto := []byte(cfg.Secreto)
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"iss": "yangeeapp@gmail.com",
-			"exp": time.Now().Add(time.Hour + 1).Unix(),
+			"exp": time.Now().Add(time.Hour + 1).Unix(), //Expira en 1 hora
 			"id": usuario.ID,
 		})
     tokenString, _ := token.SignedString(secreto)
@@ -29,8 +30,12 @@ func CrearToken(usuario models.Usuario) (interface{}) {
 
 func ArmarToken(r *http.Request) (models.Token) { //En caso de que se quisiesen guardar los tokens, se hace directo de esta funcion
     var token models.Token
-    user := context.Get(r, "user")
-    tjson, _ := json.Marshal(user.(*jwt.Token))
+    //user := context.Get(r, "Bearer")
+    authorization := r.Header["Authorization"][0]
+    token_sin_parsear := strings.Fields(authorization) // authorization es "Bearer eyJhbG.eyJle.1Jav", aca separamos las 2 palabras
+    log.Println(token_sin_parsear[1])
+
+    tjson, _ := json.Marshal(token_sin_parsear[1].(*jwt.Token))
     json.Unmarshal(tjson, &token)
     return token
 }

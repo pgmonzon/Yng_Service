@@ -21,6 +21,7 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
 	if (!core.ChequearPermisos(r, "SecuredPing")){
 		core.JSONError(w, r, start, "Este usuario no tiene permisos o hubo un error procesando tu request. Se ha contactado a un administrador.", http.StatusInternalServerError)
