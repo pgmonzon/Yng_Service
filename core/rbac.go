@@ -13,10 +13,8 @@ import (
 
 func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
   // esta funcion se encarga de responder SI o NO a la pregunta "¿tiene este usuario permisos para ejecutar lo que me esta pidiendo?"
-  log.Println("Esto se ejecuta")
   id := ExtraerClaim(r, "id")
   permiso, err := extraerInfoPermiso(permisoBuscado)
-  log.Println("Esto tambien")
   if (err != nil) { return false }
   if (!permiso.Activo || permiso.Borrado){
     return false
@@ -39,11 +37,14 @@ func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
       return true
     }
   }
-  //log.Println("Rol del usuario: ",extraerInfoRol(user.Rol, session).Nombre)
   return false
 }
 
+// func ChequeosDeExpiracion() () {}
+// Hay que hacer esta funcion para que chequee si todos los rp, roles, o permisos, estan desactivados o borrados
+
 func extraerInfoRol(id string) (models.Roles, error) {
+  // No es usado por el momento
   var modelRol []models.Roles
   var modelError models.Roles
   if bson.IsObjectIdHex(id) != true { // Un poco de sanity.
@@ -63,7 +64,7 @@ func extraerInfoRol(id string) (models.Roles, error) {
 }
 
 func extraerInfoUsuario(id string) (models.Usuario, error) {
-  //que rol tiene la id que nos pasan???
+  //que rol tiene el usuario que nos pasan???
   var usuario []models.Usuario
   var modelError models.Usuario
 	if bson.IsObjectIdHex(id) != true { // Un poco de sanity.
@@ -83,7 +84,7 @@ func extraerInfoUsuario(id string) (models.Usuario, error) {
 }
 
 func extraerPermisosDelRol(id bson.ObjectId) (models.RP, error){
-  //le das una ID de rol a esta funcion, y te devuelve los permisos que tiene ese Rol (los devuelve en un array)
+  //le das un Rol a esta funcion, y te devuelve los permisos que tiene ese Rol (los devuelve en un array)
   var rp []models.RP
   var modelError models.RP
 
@@ -93,8 +94,7 @@ func extraerPermisosDelRol(id bson.ObjectId) (models.RP, error){
   collection := session.DB(Dbname).C("rp")
   collection.Find(bson.M{"idrol": id_string}).All(&rp)
   if (len(rp) == 0) {
-    log.Printf("FATAL ERROR: Id invalida. Lo cual significa que /login esta creando tokens con IDs rotas")
-    return modelError, errors.New("Id invalida")
+    return modelError, errors.New("Id no tiene permisos.")
   }
   return rp[0], nil
 }

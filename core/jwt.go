@@ -5,7 +5,6 @@ import (
     //"encoding/json"
     "net/http"
     "time"
-    "log"
     "fmt"
     "strings"
 
@@ -39,7 +38,6 @@ func ParsearToken(r *http.Request) (*jwt.Token) {
     */
     authorization := r.Header["Authorization"][0]
     token_sin_parsear := strings.Fields(authorization) // authorization es "Bearer eyJhbG.eyJle.1Jav", aca separamos las 2 palabras
-    log.Println(token_sin_parsear[1])
 
     token, _ := jwt.Parse(token_sin_parsear[1], func(token *jwt.Token) (interface{}, error) {
 
