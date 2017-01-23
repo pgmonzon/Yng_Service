@@ -14,7 +14,7 @@ import (
 func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
   // esta funcion se encarga de responder SI o NO a la pregunta "¿tiene este usuario permisos para ejecutar lo que me esta pidiendo?"
   id := ExtraerClaim(r, "id")
-  permiso, err := extraerInfoPermiso(permisoBuscado)
+  permiso, err := ExtraerInfoPermiso(permisoBuscado)
   if (err != nil) { return false }
   if (!permiso.Activo || permiso.Borrado){
     return false
@@ -22,13 +22,13 @@ func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
   if id == ""{
     return false  //Esto sería un error más que falta de permisos (no existe el campo id en el token o es un token invalido). Hay que buscar la forma de manejar estos errores
   }
-  user, err := extraerInfoUsuario(id.(string)) // La tengo que convertir a string porque me devolvieron una interface{}
+  user, err := ExtraerInfoUsuario(id.(string)) // La tengo que convertir a string porque me devolvieron una interface{}
   if (err != nil) { return false }
   if user.Rol == cfg.GuestRol{
     return false //Es guest
   }
 
-  RP, err := extraerPermisosDelRol(user.Rol)
+  RP, err := ExtraerPermisosDelRol(user.Rol)
   if (err != nil) { return false }
   for _, v := range RP.IDPermisos {
     v_bson := bson.ObjectIdHex(v)
@@ -40,11 +40,7 @@ func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
   return false
 }
 
-// func ChequeosDeExpiracion() () {}
-// Hay que hacer esta funcion para que chequee si todos los rp, roles, o permisos, estan desactivados o borrados
-
-func extraerInfoRol(id string) (models.Roles, error) {
-  // No es usado por el momento
+func ExtraerInfoRol(id string) (models.Roles, error) {
   var modelRol []models.Roles
   var modelError models.Roles
   if bson.IsObjectIdHex(id) != true { // Un poco de sanity.
@@ -63,8 +59,8 @@ func extraerInfoRol(id string) (models.Roles, error) {
   return modelRol[0], nil
 }
 
-func extraerInfoUsuario(id string) (models.Usuario, error) {
-  //que rol tiene el usuario que nos pasan???
+func ExtraerInfoUsuario(id string) (models.Usuario, error) {
+  //que rol tiene la id que nos pasan???
   var usuario []models.Usuario
   var modelError models.Usuario
 	if bson.IsObjectIdHex(id) != true { // Un poco de sanity.
@@ -83,8 +79,8 @@ func extraerInfoUsuario(id string) (models.Usuario, error) {
 	return usuario[0], nil
 }
 
-func extraerPermisosDelRol(id bson.ObjectId) (models.RP, error){
-  //le das un Rol a esta funcion, y te devuelve los permisos que tiene ese Rol (los devuelve en un array)
+
+func ExtraerPermisosDelRol(id bson.ObjectId) (models.RP, error){
   var rp []models.RP
   var modelError models.RP
 
@@ -99,7 +95,7 @@ func extraerPermisosDelRol(id bson.ObjectId) (models.RP, error){
   return rp[0], nil
 }
 
-func extraerInfoPermiso(permiso string) (models.Permisos, error) {
+func ExtraerInfoPermiso(permiso string) (models.Permisos, error) {
   //Nota: En caso que sea necesario, se puede hacer un case switch si "permiso string" es una ID o el nombre del permiso
   var modelPermisos []models.Permisos
   var modelError models.Permisos
@@ -115,7 +111,7 @@ func extraerInfoPermiso(permiso string) (models.Permisos, error) {
 }
 
 func EstaPermisoActivo(permiso string) (bool){
-  per, err := extraerInfoPermiso(permiso)
+  per, err := ExtraerInfoPermiso(permiso)
   if err == nil {
     if per.Activo == true{
       return true

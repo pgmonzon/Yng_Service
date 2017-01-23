@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/pgmonzon/Yng_Servicios/core"
+	//h"github.com/pgmonzon/Yng_Servicios/core/rbac"
 )
 
 
@@ -28,7 +29,7 @@ func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
 		core.JSONError(w, r, start, "Este usuario no tiene permisos o hubo un error procesando tu request. Se ha contactado a un administrador.", http.StatusInternalServerError)
 		return
 	}
-	core.DebugPermisos(r)
+	//rbac.ConseguirRP(r)
 	session := core.Session.Copy()
 	defer session.Close()
 	respuesta, _ := json.Marshal("[respuesta: Estas autenticado.]")
