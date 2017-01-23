@@ -43,6 +43,8 @@ func NewRouter() *mux.Router {
 		})
 	//Todo
 	r.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
+	r.HandleFunc("/secured/ping", handlers.SecuredPingHandler).Methods("GET")
+	r.HandleFunc("/secured/ping", handlers.SetearHeaders).Methods("OPTIONS")
 	r.HandleFunc("/api/usuarios/login", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.HandleFunc("/api/usuarios/fblogin", handlers.SetearHeaders).Methods("OPTIONS")
 	r.HandleFunc("/api/heroes/{heroID}", handlers.SetearHeaders).Methods("OPTIONS")

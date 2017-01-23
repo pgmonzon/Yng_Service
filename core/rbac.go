@@ -37,7 +37,6 @@ func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
       return true
     }
   }
-  //log.Println("Rol del usuario: ",extraerInfoRol(user.Rol, session).Nombre)
   return false
 }
 
@@ -80,8 +79,8 @@ func ExtraerInfoUsuario(id string) (models.Usuario, error) {
 	return usuario[0], nil
 }
 
+
 func ExtraerPermisosDelRol(id bson.ObjectId) (models.RP, error){
-  //le das una ID de rol a esta funcion, y te devuelve los permisos que tiene ese Rol (los devuelve en un array)
   var rp []models.RP
   var modelError models.RP
 
@@ -91,8 +90,7 @@ func ExtraerPermisosDelRol(id bson.ObjectId) (models.RP, error){
   collection := session.DB(Dbname).C("rp")
   collection.Find(bson.M{"idrol": id_string}).All(&rp)
   if (len(rp) == 0) {
-    log.Printf("FATAL ERROR: Id invalida. Lo cual significa que /login esta creando tokens con IDs rotas")
-    return modelError, errors.New("Id invalida")
+    return modelError, errors.New("Id no tiene permisos.")
   }
   return rp[0], nil
 }

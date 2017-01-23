@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+	"log"
 
 	"github.com/pgmonzon/Yng_Servicios/core"
 	//h"github.com/pgmonzon/Yng_Servicios/core/rbac"
@@ -22,6 +23,7 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
 	if (!core.ChequearPermisos(r, "SecuredPing")){
 		core.JSONError(w, r, start, "Este usuario no tiene permisos o hubo un error procesando tu request. Se ha contactado a un administrador.", http.StatusInternalServerError)
@@ -30,6 +32,7 @@ func SecuredPingHandler(w http.ResponseWriter, r *http.Request) {
 	//rbac.ConseguirRP(r)
 	session := core.Session.Copy()
 	defer session.Close()
-	respuesta, _ := json.MarshalIndent("Estas autenticado.", "", "    ") //Las respuestas siempre tienen que ser en JSON
+	respuesta, _ := json.Marshal("[respuesta: Estas autenticado.]")
+	log.Println(respuesta)
 	core.JSONResponse(w, r, start, respuesta, http.StatusOK)
 }
