@@ -4,7 +4,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//Todo struct to todo
 type Roles struct {
 	ID        bson.ObjectId `bson:"_id" json:"id"`
 	Nombre    string        `json:"rol"`
@@ -12,17 +11,16 @@ type Roles struct {
 	Borrado   bool          `json:"borrado"`
 }
 
-//Todo struct to todo
 type Permisos struct {
 	ID        bson.ObjectId `bson:"_id" json:"id"`
 	Nombre    string        `json:"nombre"`
 	Activo    bool          `json:"activo"`
 	Borrado   bool          `json:"borrado"`
+	Link	  string	`json:"link"`
 }
 
-//Todo struct to todo
 type RP struct {
-	ID             bson.ObjectId `bson:"_id" json:"id"`
-	IDRol          string        `json:"rol"`
-	IDPermisos     []string      `json:"permisos"`
+	ID             bson.ObjectId	`bson:"_id" json:"id"`
+	IDRol          bson.ObjectId	`json:"rol"`
+	IDPermisos     []bson.ObjectId	`json:"permisos"`
 }

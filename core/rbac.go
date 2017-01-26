@@ -5,6 +5,7 @@ import (
     "net/http"
     "log"
     "errors"
+    "encoding/json"
 
     "github.com/pgmonzon/Yng_Servicios/models"
     "github.com/pgmonzon/Yng_Servicios/cfg"
@@ -31,8 +32,8 @@ func ChequearPermisos(r *http.Request, permisoBuscado string) (bool) {
   RP, err := ExtraerPermisosDelRol(user.Rol)
   if (err != nil) { return false }
   for _, v := range RP.IDPermisos {
-    v_bson := bson.ObjectIdHex(v)
-    if (v_bson == permiso.ID) {
+    //v_bson := bson.ObjectIdHex(v)
+    if (v == permiso.ID) {
       log.Println("Acceso permitido de:",user.User,"a:",permisoBuscado)
       return true
     }
@@ -84,11 +85,11 @@ func ExtraerPermisosDelRol(id bson.ObjectId) (models.RP, error){
   var rp []models.RP
   var modelError models.RP
 
-  id_string := bson.ObjectId.Hex(id)
   session := Session.Copy()
   defer session.Close()
   collection := session.DB(Dbname).C("rp")
-  collection.Find(bson.M{"idrol": id_string}).All(&rp)
+  collection.Find(bson.M{"idrol": id}).All(&rp)
+  log.Println("Los permisos del rol son: ",rp)
   if (len(rp) == 0) {
     return modelError, errors.New("Id no tiene permisos.")
   }
@@ -118,4 +119,18 @@ func EstaPermisoActivo(permiso string) (bool){
     }
   }
   return false
+}
+
+
+func BuscarLosPermisos(rp_usuario models.RP) (){
+	log.Println("ANTES DE ENTRAR A BuscarLosPermisos:", rp_usuario.IDPermisos)
+	var permisos models.Permisos
+	session := Session.Copy()
+	defer session.Close()
+	id_bson := bson.ObjectIdHex("57fe804b415860191ba10f3d")
+	collection := session.DB(Dbname).C("permisos")
+	collection.Find(bson.M{"_id": id_bson }).All(&permisos)
+	log.Println(permisos)
+	permisos_json, _ := json.Marshal(permisos)
+	log.Println(permisos_json)
 }

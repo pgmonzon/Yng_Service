@@ -19,10 +19,10 @@ type Usuario struct {
 }
 
 type UsuarioFacebook struct {
-	ID       string        `json:"id"`
-	Name		 string				 `json:"name"`
-	Link     string        `json:"link"`
-	Email    string        `json:"email"`
+	ID	string	`json:"id"`
+	Name	string	`json:"name"`
+	Link	string	`json:"link"`
+	Email	string	`json:"email"`
 }
 
 type UsuarioCrudo struct {
