@@ -5,7 +5,7 @@ import (
     "net/http"
     "log"
     "errors"
-    "encoding/json"
+    //"encoding/json"
 
     "github.com/pgmonzon/Yng_Servicios/models"
     "github.com/pgmonzon/Yng_Servicios/cfg"
@@ -122,15 +122,15 @@ func EstaPermisoActivo(permiso string) (bool){
 }
 
 
-func BuscarLosPermisos(rp_usuario models.RP) (){
-	log.Println("ANTES DE ENTRAR A BuscarLosPermisos:", rp_usuario.IDPermisos)
-	var permisos models.Permisos
+func BuscarLosPermisos(rp_usuario models.RP) ([]models.Permisos){
+	//Esta funcion recibe un array con los permisos de un rol. Es decir, recibe un RP y se encarga de buscar los permisos que tiene ese rol.
+	//devuelve algo como 
+	//	[{ObjectIdHex("57fe804b415860191ba10f3d") SecuredPing true false } {ObjectIdHex("5805003c4158600be082c2d5") AgregarUsuario false false }]
+	var permisos []models.Permisos
 	session := Session.Copy()
 	defer session.Close()
-	id_bson := bson.ObjectIdHex("57fe804b415860191ba10f3d")
 	collection := session.DB(Dbname).C("permisos")
-	collection.Find(bson.M{"_id": id_bson }).All(&permisos)
+	collection.Find(bson.M{"_id": bson.M{"$in": rp_usuario.IDPermisos} }).All(&permisos)
 	log.Println(permisos)
-	permisos_json, _ := json.Marshal(permisos)
-	log.Println(permisos_json)
+	return permisos
 }

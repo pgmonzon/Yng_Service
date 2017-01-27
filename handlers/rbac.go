@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+	"log"
 
 	"github.com/pgmonzon/Yng_Servicios/models"
 	"github.com/pgmonzon/Yng_Servicios/core"
@@ -109,4 +110,18 @@ func AgregarRP(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Location", r.URL.Path+"/"+string(rp.ID.Hex()))
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
+}
+
+func ParsearPermisosAJSON(r *http.Request) (){
+	//Consigue los permisos del usuario y los convierte a formato JSON
+	var nombres_de_los_permisos []string
+	id := core.ExtraerClaim(r, "id")
+	user, _ := core.ExtraerInfoUsuario(id.(string))
+	RP, _ := core.ExtraerPermisosDelRol(user.Rol)
+	obj_permisos := core.BuscarLosPermisos(RP)
+	for _, v := range obj_permisos {
+		nombres_de_los_permisos = append(nombres_de_los_permisos, v.Nombre)
+	}
+	json_permisos, _ := json.Marshal(nombres_de_los_permisos)
+	log.Println(json_permisos)
 }
