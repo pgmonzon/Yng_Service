@@ -112,8 +112,9 @@ func AgregarRP(w http.ResponseWriter, r *http.Request) {
 	core.JSONResponse(w, r, start, []byte{}, http.StatusCreated)
 }
 
-func ParsearPermisosAJSON(r *http.Request) (){
+func PermisosDelUsuario(w http.ResponseWriter, r *http.Request) (){
 	//Consigue los permisos del usuario y los convierte a formato JSON
+	start := time.Now()
 	var nombres_de_los_permisos []string
 	id := core.ExtraerClaim(r, "id")
 	user, _ := core.ExtraerInfoUsuario(id.(string))
@@ -123,5 +124,5 @@ func ParsearPermisosAJSON(r *http.Request) (){
 		nombres_de_los_permisos = append(nombres_de_los_permisos, v.Nombre)
 	}
 	json_permisos, _ := json.Marshal(nombres_de_los_permisos)
-	log.Println(json_permisos)
+	core.JSONResponse(w, r, start, json_permisos, http.StatusOK)
 }

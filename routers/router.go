@@ -79,6 +79,10 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/permisos", handlers.ListarPermisos).Methods("GET")
 	r.HandleFunc("/api/permisos", handlers.AgregarPermiso).Methods("POST")
 	r.HandleFunc("/api/rp", handlers.AgregarRP).Methods("POST")
+	r.Handle("/api/usuarios/permisos", negroni.New(
+		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
+		negroni.Wrap(http.HandlerFunc(handlers.PermisosDelUsuario)),
+		)).Methods("GET")
 
 	//############		Ejemplo		##############
 	r.HandleFunc("/api/ejemplos", handlers.EjemploIndex).Methods("GET")
