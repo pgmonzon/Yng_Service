@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-	"log"
+	//"log"
 
 	"github.com/pgmonzon/Yng_Servicios/models"
 	"github.com/pgmonzon/Yng_Servicios/core"
@@ -113,6 +113,7 @@ func AgregarRP(w http.ResponseWriter, r *http.Request) {
 }
 
 func PermisosDelUsuario(w http.ResponseWriter, r *http.Request) (){
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	//Consigue los permisos del usuario y los convierte a formato JSON
 	start := time.Now()
 	var nombres_de_los_permisos []string

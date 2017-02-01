@@ -42,6 +42,7 @@ func NewRouter() *mux.Router {
 		                                     jwtmiddleware.FromParameter("auth_code")),*/
 		})
 	//Todo
+	r.HandleFunc("*", handlers.SetearHeaders)
 	r.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
 	r.HandleFunc("/secured/ping", handlers.SecuredPingHandler).Methods("GET")
 	r.HandleFunc("/secured/ping", handlers.SetearHeaders).Methods("OPTIONS")
@@ -51,6 +52,7 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/usuarios/register", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.HandleFunc("/api/usuarios/verificar", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.HandleFunc("/api/usuarios/cambiarcontrasena", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
+	r.HandleFunc("/api/usuarios/permisos", handlers.SetearHeaders).Methods("OPTIONS")
 	r.Handle("/secured/ping", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(handlers.SecuredPingHandler)),
