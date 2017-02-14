@@ -24,3 +24,11 @@ type RP struct {
 	IDRol          bson.ObjectId	`json:"rol"`
 	IDPermisos     []bson.ObjectId	`json:"permisos"`
 }
+
+type Menus struct {
+	ID		bson.ObjectId	`bson:"_id" json:"id"`
+	Desc		string		`json:"desc"`
+	IDPadre		bson.ObjectId	`json:"padre"`
+	EsMenu		bool		`json:"esmenu"`
+	Url		string		`json:"url"`
+}
