@@ -1,7 +1,5 @@
 package handlers
 
-// TODO: Mucho copypaste, se tiene que poder simplificar.
-
 import (
 	"encoding/json"
 	"net/http"
