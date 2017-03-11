@@ -25,10 +25,11 @@ type RP struct {
 	IDPermisos     []bson.ObjectId	`json:"permisos"`
 }
 
-type Menus struct {
+type Menues struct {
 	ID				bson.ObjectId	`bson:"_id" json:"id"`
-	Desc			string				`json:"desc"`
-	IDPadre		bson.ObjectId	`json:"padre"`
 	EsMenu		bool					`json:"esmenu"`
+	Permiso		bson.ObjectId `json:"permiso"`
+	Desc			string				`json:"desc"`
 	Url				string				`json:"url"`
+	IDPadre		bson.ObjectId	`json:"padre"`
 }

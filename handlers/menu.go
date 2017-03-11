@@ -14,10 +14,11 @@ import (
 )
 
 /*
-type Menus struct {
+type Menues struct {
 	ID					bson.ObjectId		`bson:"_id" json:"id"`
-	Desc				string					`json:"desc"`
 	IDPadre			bson.ObjectId		`json:"padre"`
+	Permiso		bson.ObjectId `json:"permiso"`
+	Desc				string					`json:"desc"`
 	EsMenu			bool						`json:"esmenu"`
 	Url					string					`json:"url"`
 }
@@ -25,17 +26,19 @@ type Menus struct {
 
 func CrearMenu(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
-	var menu models.Menus
+	var menu models.Menues
 	json.NewDecoder(r.Body).Decode(&menu)
 	if menu.Desc == "" {
 		core.JSONError(w, r, start, "Incorrect body", http.StatusBadRequest)
 		return
 	}
-	objID := bson.NewObjectId()
-	menu.ID = objID
+	menu.ID = bson.NewObjectId()
+	if(len(menu.IDPadre) == 0) {
+		menu.IDPadre = menu.ID
+	}
 	session := core.Session.Copy()
 	defer session.Close()
-	collection := session.DB(core.Dbname).C("menus")
+	collection := session.DB(core.Dbname).C("menues")
 	err := collection.Insert(menu)
 	if err != nil {
 		core.JSONError(w, r, start, "Failed to insert menu", http.StatusInternalServerError)
@@ -47,8 +50,9 @@ func CrearMenu(w http.ResponseWriter, r *http.Request) {
 
 func AjustarMenu(w http.ResponseWriter, r *http.Request) {
 	//NOTA: Por el momento actualiza TODAS las variables del menu. Se puede hacer más robusto para que actualice sólo las variables que fueron modificadas
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
-	var menu models.Menus
+	var menu models.Menues
 	json.NewDecoder(r.Body).Decode(&menu)
 
 	if menu.IDPadre == "" {
@@ -57,7 +61,7 @@ func AjustarMenu(w http.ResponseWriter, r *http.Request) {
 	}
 	session := core.Session.Copy()
 	defer session.Close()
-	collection := session.DB(core.Dbname).C("menus")
+	collection := session.DB(core.Dbname).C("menues")
 	err := collection.Update(bson.M{"_id": menu.ID},
 		bson.M{"$set": bson.M{"desc": menu.Desc, "padre": menu.IDPadre, "esmenu": menu.EsMenu, "url": menu.Url}})
 	if err != nil {
@@ -67,14 +71,15 @@ func AjustarMenu(w http.ResponseWriter, r *http.Request) {
 	core.JSONResponse(w, r, start, []byte{}, http.StatusNoContent)
 }
 
-func ConseguirMenuesPadres(w http.ResponseWriter, r *http.Request) {
+func ConseguirMenues(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*") //Porfavor no olvidarse de borrar esta porqueria
 	start := time.Now()
-	var menus []models.Menus
+	var menues []models.Menues
 	session := core.Session.Copy()
 	defer session.Close()
-	collection := session.DB(core.Dbname).C("menus")
-	collection.Find(bson.M{}).All(&menus)
-	response, err := json.MarshalIndent(menus, "", "    ")
+	collection := session.DB(core.Dbname).C("menues")
+	collection.Find(bson.M{}).All(&menues)
+	response, err := json.MarshalIndent(menues, "", "    ")
 	if err != nil {
 		panic(err)
 	}

@@ -53,6 +53,7 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/usuarios/verificar", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.HandleFunc("/api/usuarios/cambiarcontrasena", handlers.SetearHeaders).Methods("OPTIONS") //Acordarse de borrar esta mierda
 	r.HandleFunc("/api/usuarios/permisos", handlers.SetearHeaders).Methods("OPTIONS")
+	r.HandleFunc("/api/menues", handlers.SetearHeaders).Methods("OPTIONS")
 	r.Handle("/secured/ping", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(handlers.SecuredPingHandler)),
@@ -85,6 +86,11 @@ func NewRouter() *mux.Router {
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(handlers.PermisosDelUsuario)),
 		)).Methods("GET")
+
+	//############		Menues		##############
+	r.HandleFunc("/api/menues", handlers.ConseguirMenues).Methods("GET")
+	r.HandleFunc("/api/menues/agregar", handlers.CrearMenu).Methods("POST")
+	//r.HandleFunc("/api/menues/borrar", handlers.BorrarMenues).Methods("GET")
 
 	//############		Ejemplo		##############
 	r.HandleFunc("/api/ejemplos", handlers.EjemploIndex).Methods("GET")
